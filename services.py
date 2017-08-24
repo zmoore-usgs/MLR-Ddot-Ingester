@@ -1,4 +1,6 @@
+from flask import request
 from flask_restplus import Api, Resource
+from werkzeug.utils import secure_filename
 
 from app import application
 
@@ -12,5 +14,11 @@ api = Api(application,
 @api.route('/ddots')
 class DdotIngester(Resource):
 
+    @api.param('file','file')
     def post(self):
-        return 'Not yet implemented'
+        f = request.files['file']
+        file_contents = f.read()
+        return {
+            'message': 'File Uploaded successfully',
+            'contents': file_contents.decode()
+        }
