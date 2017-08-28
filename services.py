@@ -1,6 +1,6 @@
 from flask import request
 from flask_restplus import Api, Resource
-from werkzeug.utils import secure_filename
+
 
 from app import application
 
@@ -18,6 +18,9 @@ class DdotIngester(Resource):
     def post(self):
         f = request.files['file']
         file_contents = f.read()
+
+
+
         return {
             'message': 'File Uploaded successfully',
             'contents': file_contents.decode()
