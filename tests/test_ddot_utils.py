@@ -106,6 +106,11 @@ class ParseTestCase(TestCase):
             'USGS 580042108433301 12'
         )
 
+        self.long_line = (
+            'USGS 480042108433301 R=0* T=A* 12=\'YELLVILLE WATERWORKS JUNK JUNK JUNK JUNK STUFF STUFF STUFF STUFF\'* 11=S* 35=M* 36=NAD27*\n'
+            'USGS 480042108433301 39=WS* 813=CST* 814=Y* 3=C* 41=US*'
+        )
+
     def test_no_contents(self):
         with self.assertRaises(ParseError):
             parse('')
@@ -117,7 +122,7 @@ class ParseTestCase(TestCase):
     def test_with_line_too_long(self):
         with self.assertRaises(ParseError) as e:
             parse('XXXXXXX\n' + self.long_line)
-        self.assertIn(': 2', e.exception.message)
+        self.assertIn('line 2', e.exception.message)
 
     def test_with_single_location(self):
         result = parse('XXXXXXX\n' +self.location1)
@@ -192,3 +197,26 @@ class ParseTestCase(TestCase):
             result = parse('XXXXXX\n' + self.location1 + '\n' + self.location3 + '=13')
         self.assertIn('[5, 6]', err.exception.message)
         self.assertIn('12=13', err.exception.message)
+
+    def test_with_duplicate_station_name(self):
+        with self.assertRaises(ParseError) as err:
+            result = parse('XXXXXX\n' + self.location1 + '\n' + 'USGS 480042108433301 900=Another name*')
+        self.assertIn('2, 3, 4, 5', err.exception.message)
+        self.assertIn('Duplicate station name', err.exception.message)
+
+    def test_with_unknown_code(self):
+        result = parse('XXXXX\n' + self.location2 + '\n' + 'USEPA123456789012345 ZZ=13*')
+        self.assertEqual(result[0], {
+            'agencyCode': 'USEPA',
+            'siteNumber': '123456789012345',
+            'databaseTableIdentifier': '0',
+            'transactionType': 'A',
+            'stationName': '\'INTAKE ON LAKE WOBEGON\'',
+            'siteTypeCode': 'FA-DV Long Line',
+            'coordinateMethodCode': 'M',
+            'coordinateDatumCode': 'NAD27',
+            'districtCode': '05',
+            'stateFipsCode': '05',
+            'countyCode': '023',
+            'hydrologicUnitCode': '11010014'
+        })

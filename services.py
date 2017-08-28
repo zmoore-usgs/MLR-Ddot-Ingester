@@ -3,6 +3,7 @@ from flask_restplus import Api, Resource
 
 
 from app import application
+from ddot_utils import ParseError, parse as parse_ddot
 
 api = Api(application,
           title='D dot File Ingestor',
@@ -18,10 +19,13 @@ class DdotIngester(Resource):
     def post(self):
         f = request.files['file']
         file_contents = f.read()
+        try:
+            result = parse_ddot(file_contents.decode())
+        except ParseError as err:
+            response, status = {
+                'message': err.message
+            }, 400
+        else:
+            response, status = result, 200
 
-
-
-        return {
-            'message': 'File Uploaded successfully',
-            'contents': file_contents.decode()
-        }
+        return response, status

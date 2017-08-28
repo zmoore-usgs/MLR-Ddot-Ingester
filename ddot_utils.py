@@ -77,8 +77,13 @@ def get_lines(content):
     if not content:
         raise ParseError('No contents found')
     lines = content.split('\n')[1:]
+
     if not lines:
         raise ParseError('No transactions found')
+
+    # Remove trailing line feed
+    if not lines[len(lines) - 1]:
+        lines = lines[0:len(lines) - 1]
 
     lines_with_errors = []
     for index, line in enumerate(lines):
