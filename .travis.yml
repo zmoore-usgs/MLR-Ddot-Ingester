@@ -10,4 +10,5 @@ install:
 
 script:
   - coverage run -m unittest
+  - coverage report --omit=tests/*.py
   - coveralls
