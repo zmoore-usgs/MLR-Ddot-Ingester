@@ -28,7 +28,6 @@ def read(filepath):
 
 
 requirements = read_requirements('requirements.txt')
-test_requirements = read_requirements('test_requirements.txt')
 
 setup(name='usgs_wma_mlr_ddot_ingester',
       version='0.1.0dev',
@@ -39,7 +38,6 @@ setup(name='usgs_wma_mlr_ddot_ingester',
       long_description =read('README.md'),
       install_requires=requirements,
       test_loader='unittest:TestLoader',
-      test_requires=test_requirements,
       platforms='any',
       zip_safe=False,
       py_modules=['app', 'config', 'services', 'ddot_utils']
