@@ -9,6 +9,5 @@ install:
   - pip install coveralls
 
 script:
-  - coverage run -m unittest
-  - coverage report --omit=tests/*.py
+  - coverage run --omit=tests/*.py -m unittest
   - coveralls
