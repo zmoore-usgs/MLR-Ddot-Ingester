@@ -10,10 +10,6 @@ RUN apk add --update \
   ca-certificates \
   openssl
 COPY gunicorn_config.py /local/gunicorn_config.py
-COPY root.crt /tmp/DOIRootCA.crt
-RUN openssl x509 -in /tmp/DOIRootCA.crt -out /local/DOIRootCA.pem -outform PEM  && \
-    mv /tmp/DOIRootCA.crt /usr/local/share/ca-certificates/DOIRootCA.crt && \
-    update-ca-certificates
 RUN export PIP_CERT="/etc/ssl/certs/ca-certificates.crt" && \
     pip3 install --upgrade pip && \
     pip3 install  gunicorn==19.7.1 &&\
