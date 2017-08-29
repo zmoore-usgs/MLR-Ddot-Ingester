@@ -7,10 +7,9 @@ python 3 and virtualenv installed.
 % virtualenv --python=python3 env
 % env/bin/pip install -r requirements.txt
 ```
-To run the tests and generate coverage statistics execute the following additional steps:
+To run the tests:
 ```bash
-% env/bin/pip install -r testing_requirements.txt
-% env/bin/nosetests --with-coverage 
+env/bin/python -m unittest
 ```
 
 To run the application locally execute the following:
