@@ -1,5 +1,5 @@
 # MLR-Ddot-Ingester
-MLR 'd.' file ingester microservice
+MLR 'd.' File Ingester Microservice
 
 This project has been built and tested with python 3.6.x. To build the project locally you will need
 python 3 and virtualenv installed.
