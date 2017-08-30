@@ -1,5 +1,6 @@
 # MLR-Ddot-Ingester
 [![Build Status](https://travis-ci.org/USGS-CIDA/MLR-Ddot-Ingester.svg?branch=master)](https://travis-ci.org/USGS-CIDA/MLR-Ddot-Ingester)
+[![Coverage Status](https://coveralls.io/repos/github/USGS-CIDA/MLR-Ddot-Ingester/badge.svg)](https://coveralls.io/github/USGS-CIDA/MLR-Ddot-Ingester)
 
 This project has been built and tested with python 3.6.x. To build the project locally you will need
 python 3 and virtualenv installed.
