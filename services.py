@@ -72,7 +72,9 @@ location_transaction_model = api.model('LocationTransactionModel', {
     'updatedBy': fields.String(),
     'databasTableIdentifier': fields.String(),
     'transactionType': fields.String(),
-
+})
+error_model = api.model('ErrorModel', {
+    'error_message': fields.String(required=True)
 })
 
 parser = reqparse.RequestParser()
@@ -81,7 +83,8 @@ parser.add_argument('file', type=FileStorage, location='files', required=True)
 @api.route('/ddots')
 class DdotIngester(Resource):
 
-    @api.response(200, 'Successfully uploaded and parsed. Returns list of models.', location_transaction_model)
+    @api.response(200, 'Successfully uploaded and parsed', [location_transaction_model])
+    @api.response(401, 'File can not be parsed', error_model)
     @api.expect(parser)
     def post(self):
         args = parser.parse_args()
@@ -91,7 +94,7 @@ class DdotIngester(Resource):
             result = parse_ddot(file_contents.decode())
         except ParseError as err:
             response, status = {
-                'message': err.message
+                'error_message': err.message
             }, 400
         else:
             response, status = result, 200
