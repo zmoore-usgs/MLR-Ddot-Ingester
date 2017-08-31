@@ -63,8 +63,13 @@ KEY_TO_ATTR_MAPPING = {
 }
 
 class ParseError(Exception):
+
     def __init__(self, message):
         self.message = message
+
+    def __str__(self):
+        return 'ParseError, message: {0}'.format(self.message)
+
 
 def get_lines(content):
     '''
