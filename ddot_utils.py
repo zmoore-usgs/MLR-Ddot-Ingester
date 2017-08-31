@@ -194,6 +194,20 @@ def translate_keys_to_attributes(kv_pairs):
     return result
 
 
+def remove_leading_and_trailing_single_quotes(value):
+    '''
+
+    :param str value:
+    :return: str: Returns value unless the first and last characters are single quotes, then it removes the single
+        quotes and returns the resulting string.
+    '''
+    if value.startswith('\'') and value.endswith('\''):
+        result = value[1:len(value) - 1]
+    else:
+        result = value
+    return result
+
+
 def parse(file_contents):
     '''
 
@@ -206,10 +220,6 @@ def parse(file_contents):
     transactions = get_transactions(lines)
     result = []
     for transaction in transactions:
-        this_result = {
-            'agencyCode': transaction.get('agencyCode'),
-            'siteNumber': transaction.get('siteNumber')
-        }
         try:
             kv_pairs = parse_key_value_pairs(transaction.get('key_value_pairs'))
         except ParseError as err:
@@ -221,6 +231,11 @@ def parse(file_contents):
         this_result = translate_keys_to_attributes(kv_pairs)
         this_result['agencyCode'] = transaction.get('agencyCode')
         this_result['siteNumber'] = transaction.get('siteNumber')
+
+        # Any special processing on values
+        if 'stationName' in this_result:
+            this_result['stationName'] = remove_leading_and_trailing_single_quotes(this_result['stationName'])
+
         result.append(this_result)
 
     return result

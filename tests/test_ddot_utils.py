@@ -91,6 +91,8 @@ class ParseTestCase(TestCase):
 
     def setUp(self):
         self.maxDiff = None
+
+        self.location1_transaction_start = 'USGS 480042108433301 R=0* T=A*'
         self.location1 = (
             'USGS 480042108433301 R=0* T=A* 12=\'YELLVILLE WATERWORKS\'* 11=S* 35=M* 36=NAD27*\n'
             'USGS 480042108433301 6=05* 7=05* 8=089* 20=11010003* 802=NNNNNNNNNNNNYNNNNNNN*\n'
@@ -132,7 +134,7 @@ class ParseTestCase(TestCase):
             'siteNumber': '480042108433301',
             'databaseTableIdentifier': '0',
             'transactionType': 'A',
-            'stationName': '\'YELLVILLE WATERWORKS\'',
+            'stationName': 'YELLVILLE WATERWORKS',
             'coordinateAccuracyCode': 'S',
             'coordinateMethodCode': 'M',
             'coordinateDatumCode': 'NAD27',
@@ -156,7 +158,7 @@ class ParseTestCase(TestCase):
             'siteNumber': '480042108433301',
             'databaseTableIdentifier': '0',
             'transactionType': 'A',
-            'stationName': '\'YELLVILLE WATERWORKS\'',
+            'stationName': 'YELLVILLE WATERWORKS',
             'coordinateAccuracyCode': 'S',
             'coordinateMethodCode': 'M',
             'coordinateDatumCode': 'NAD27',
@@ -176,7 +178,7 @@ class ParseTestCase(TestCase):
             'siteNumber': '123456789012345',
             'databaseTableIdentifier': '0',
             'transactionType': 'A',
-            'stationName': '\'INTAKE ON LAKE WOBEGON\'',
+            'stationName': 'INTAKE ON LAKE WOBEGON',
             'siteTypeCode': 'FA-DV Long Line',
             'coordinateMethodCode': 'M',
             'coordinateDatumCode': 'NAD27',
@@ -204,6 +206,20 @@ class ParseTestCase(TestCase):
         self.assertIn('2, 3, 4, 5', err.exception.message)
         self.assertIn('Duplicate station name', err.exception.message)
 
+    def test_with_trailing_quote_and_no_starting_quote_on_station_name(self):
+        result = parse('XXXXXX\n' +
+                       self.location1_transaction_start +
+                       ' 12=\'YELLVILLE WATERWORKS*'
+        )
+        self.assertEqual(result[0].get('stationName'), '\'YELLVILLE WATERWORKS')
+
+    def test_with_starting_quote_and_no_ending_quote_on_station_name(self):
+        result = parse('XXXXXX\n' +
+                       self.location1_transaction_start +
+                       ' 12=YELLVILLE WATERWORKS\'*'
+        )
+        self.assertEqual(result[0].get('stationName'), 'YELLVILLE WATERWORKS\'')
+
     def test_with_unknown_code(self):
         result = parse('XXXXX\n' + self.location2 + '\n' + 'USEPA123456789012345 ZZ=13*')
         self.assertEqual(result[0], {
@@ -211,7 +227,7 @@ class ParseTestCase(TestCase):
             'siteNumber': '123456789012345',
             'databaseTableIdentifier': '0',
             'transactionType': 'A',
-            'stationName': '\'INTAKE ON LAKE WOBEGON\'',
+            'stationName': 'INTAKE ON LAKE WOBEGON',
             'siteTypeCode': 'FA-DV Long Line',
             'coordinateMethodCode': 'M',
             'coordinateDatumCode': 'NAD27',

@@ -80,6 +80,7 @@ error_model = api.model('ErrorModel', {
 parser = reqparse.RequestParser()
 parser.add_argument('file', type=FileStorage, location='files', required=True)
 
+
 @api.route('/ddots')
 class DdotIngester(Resource):
 
