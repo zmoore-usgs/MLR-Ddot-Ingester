@@ -236,3 +236,13 @@ class ParseTestCase(TestCase):
             'countyCode': '023',
             'hydrologicUnitCode': '11010014'
         })
+
+    def test_with_duplicate_adjacent_transactions(self):
+        with self.assertRaises(ParseError) as err:
+            result = parse('XXXXX\n' + self.location1 + '\n' + self.location1)
+        self.assertIn('Duplicate transaction', err.exception.message)
+
+    def test_with_duplicate_non_adjacent_transactions(self):
+        with self.assertRaises(ParseError) as err:
+            result = parse('XXXXXX\n' + self.location1 + '\n' + self.location2 + '\n' + self.location1)
+        self.assertIn('Duplicate transaction', err.exception.message)

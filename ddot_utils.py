@@ -184,6 +184,18 @@ def has_duplicate_station_name_keys(kv_pairs):
                 found = True
     return has_duplicate
 
+def has_duplicate_transaction(kv_pairs):
+    found = False
+    has_duplicate = False
+    for (key, value) in kv_pairs:
+        if KEY_TO_ATTR_MAPPING.get(key) == 'databaseTableIdentifier':
+            if found:
+                has_duplicate = True
+                break
+            else:
+                found = True
+    return has_duplicate
+
 
 def translate_keys_to_attributes(kv_pairs):
     '''
@@ -225,6 +237,8 @@ def parse(file_contents):
         except ParseError as err:
             raise ParseError('Parsing error on lines{0}: line {1}'.format(transaction.get('line_numbers'), err.message))
 
+        if has_duplicate_transaction(kv_pairs):
+            raise ParseError('Duplicate transaction on lines {0}'.format(transaction.get('line_numbers')))
         if has_duplicate_station_name_keys(kv_pairs):
             raise ParseError('Parsing error on lines {0}: Duplicate station name codes'.format(transaction.get('line_numbers')))
 
@@ -237,6 +251,11 @@ def parse(file_contents):
             this_result['stationName'] = remove_leading_and_trailing_single_quotes(this_result['stationName'])
 
         result.append(this_result)
+
+    # Do another check for duplicate transactions that are not adjacent
+    sites = [(transaction.get('agencyCode'), transaction.get('siteNumber')) for transaction in result]
+    if len(sites) != len(set(sites)):
+       raise ParseError('Duplicate transaction for a site')
 
     return result
 
