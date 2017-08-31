@@ -100,7 +100,7 @@ class ParseTestCase(TestCase):
         )
         self.location2 = (
             'USEPA123456789012345 R=0* T=A* 12=\'INTAKE ON LAKE WOBEGON\'* 802=FA-DV\n'
-            'USEPA123456789012345 Long Line* 35=M* 36=NAD27* 6=05* 7=05* 8=023* 20=11010014*'
+            'USEPA123456789012345 Long Line* 35=* 36=NAD27* 6=05* 7=05* 8=023* 20=11010014*'
         )
 
         self.location3 = (
@@ -180,7 +180,7 @@ class ParseTestCase(TestCase):
             'transactionType': 'A',
             'stationName': 'INTAKE ON LAKE WOBEGON',
             'siteTypeCode': 'FA-DV Long Line',
-            'coordinateMethodCode': 'M',
+            'coordinateMethodCode': '',
             'coordinateDatumCode': 'NAD27',
             'districtCode': '05',
             'stateFipsCode': '05',
@@ -229,7 +229,7 @@ class ParseTestCase(TestCase):
             'transactionType': 'A',
             'stationName': 'INTAKE ON LAKE WOBEGON',
             'siteTypeCode': 'FA-DV Long Line',
-            'coordinateMethodCode': 'M',
+            'coordinateMethodCode': '',
             'coordinateDatumCode': 'NAD27',
             'districtCode': '05',
             'stateFipsCode': '05',
