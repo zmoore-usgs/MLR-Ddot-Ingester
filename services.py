@@ -70,7 +70,7 @@ location_transaction_model = api.model('LocationTransactionModel', {
     'createdBy': fields.String(),
     'updated': fields.String(),
     'updatedBy': fields.String(),
-    'databasTableIdentifier': fields.String(),
+    'databaseTableIdentifier': fields.String(),
     'transactionType': fields.String(),
 })
 error_model = api.model('ErrorModel', {
