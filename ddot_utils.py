@@ -2,10 +2,6 @@ import itertools
 import re
 
 KEY_TO_ATTR_MAPPING = {
-    '61': 'createBy',
-    '303': 'created',
-    '62': 'updatedBy',
-    '40': 'updated',
     '5': 'projectNumber',
     '900': 'stationName',
     '12': 'stationName',
@@ -17,8 +13,6 @@ KEY_TO_ATTR_MAPPING = {
     '42': 'minorCivilDivisionCode',
     '9': 'latitude',
     '10': 'longitude',
-    '909': 'decimalLatitude',
-    '910': 'decimalLongitude',
     '11': 'coordinateAccuracyCode',
     '35': 'coordinateMethodCode',
     '36': 'coordinateDatumCode',
