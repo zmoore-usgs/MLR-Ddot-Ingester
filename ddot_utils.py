@@ -224,7 +224,7 @@ def parse(file_contents):
 
     lines = get_lines(file_contents)
     transactions = get_transactions(lines)
-    result = []
+    results = []
     for transaction in transactions:
         try:
             kv_pairs = parse_key_value_pairs(transaction.get('key_value_pairs'))
@@ -244,14 +244,17 @@ def parse(file_contents):
         if 'stationName' in this_result:
             this_result['stationName'] = remove_leading_and_trailing_single_quotes(this_result['stationName'])
 
-        result.append(this_result)
+        results.append(this_result)
+
+    # Filter out any transaction that is not for the sitefile
+    site_results = [result for result in results if result.get('databaseTableIdentifier') == '0']
 
     # Do another check for duplicate transactions that are not adjacent
-    sites = [(transaction.get('agencyCode'), transaction.get('siteNumber')) for transaction in result]
+    sites = [(site_result.get('agencyCode'), site_result.get('siteNumber')) for site_result in site_results]
     if len(sites) != len(set(sites)):
        raise ParseError('Duplicate transaction for a site')
 
-    return result
+    return site_results
 
 
 

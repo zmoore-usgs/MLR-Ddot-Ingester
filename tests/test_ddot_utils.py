@@ -107,6 +107,9 @@ class ParseTestCase(TestCase):
             'USGS 580042108433301 R=0* T=A*\n'
             'USGS 580042108433301 12'
         )
+        self.non_location = (
+            'USGS 680042108433301 R=1* T=A* 12=\'YELLVILLE WATERWORKS\'*'
+        )
 
         self.long_line = (
             'USGS 480042108433301 R=0* T=A* 12=\'YELLVILLE WATERWORKS JUNK JUNK JUNK JUNK STUFF STUFF STUFF STUFF\'* 11=S* 35=M* 36=NAD27*\n'
@@ -246,3 +249,9 @@ class ParseTestCase(TestCase):
         with self.assertRaises(ParseError) as err:
             result = parse('XXXXXX\n' + self.location1 + '\n' + self.location2 + '\n' + self.location1)
         self.assertIn('Duplicate transaction', err.exception.message)
+
+    def test_with_nonsite_transactions(self):
+        result = parse('XXXXXX\n' + self.location1 + '\n' + self.non_location + '\n' + self.location2)
+        self.assertEqual(len(result), 2)
+        sites_in_result = [this_result.get('siteNumber') for this_result in result]
+        self.assertNotIn('680042108433301', sites_in_result)
