@@ -75,7 +75,8 @@ def get_lines(content):
     '''
     if not content:
         raise ParseError('No contents found')
-    lines = content.split('\n')[1:]
+    # Handles lines ending with carriage return-linefeed as well as just a linefeed
+    lines = re.split('\r\n|\n', content)[1:]
 
     if not lines:
         raise ParseError('No transactions found')

@@ -94,8 +94,8 @@ class ParseTestCase(TestCase):
 
         self.location1_transaction_start = 'USGS 480042108433301 R=0* T=A*'
         self.location1 = (
-            'USGS 480042108433301 R=0* T=A* 12=\'YELLVILLE WATERWORKS\'* 11=S* 35=M* 36=NAD27*\n'
-            'USGS 480042108433301 6=05* 7=05* 8=089* 20=11010003* 802=NNNNNNNNNNNNYNNNNNNN*\n'
+            'USGS 480042108433301 R=0* T=A* 12=\'YELLVILLE WATERWORKS\'* 11=S* 35=M* 36=NAD27*\r\n'
+            'USGS 480042108433301 6=05* 7=05* 8=089* 20=11010003* 802=NNNNNNNNNNNNYNNNNNNN*\r\n'
             'USGS 480042108433301 39=WS* 813=CST* 814=Y* 3=C* 41=US*'
         )
         self.location2 = (
@@ -158,7 +158,7 @@ class ParseTestCase(TestCase):
         })
 
     def test_with_two_locations(self):
-        result = parse('XXXXXXX\n' + self.location1 + '\n' + self.location2)
+        result = parse('XXXXXXX\n' + self.location1 + '\r\n' + self.location2)
         self.assertEqual(len(result), 2)
         self.assertEqual(result[0], {
             'agencyCode': 'USGS ',
