@@ -164,8 +164,7 @@ def parse_key_value_pairs(kv_pairs_str):
 def has_duplicate_station_name_keys(kv_pairs):
     '''
     :param list of tuples kv_pairs:
-    :return: list of dicts
-
+    :return: Boolean
     '''
     found = False
     has_duplicate = False
@@ -179,6 +178,11 @@ def has_duplicate_station_name_keys(kv_pairs):
     return has_duplicate
 
 def has_duplicate_transaction(kv_pairs):
+    '''
+    :param list of tuples kv_pairs:
+    :return: Boolean
+    '''
+
     found = False
     has_duplicate = False
     for (key, value) in kv_pairs:
@@ -189,6 +193,13 @@ def has_duplicate_transaction(kv_pairs):
             else:
                 found = True
     return has_duplicate
+
+def has_transaction_type(kv_pairs):
+    '''
+    :param list of tuples kv_pairs:
+    :return: Boolean
+    '''
+    return 1 == len([(key) for (key, value) in kv_pairs if key == 'T'])
 
 
 def translate_keys_to_attributes(kv_pairs):
@@ -235,6 +246,8 @@ def parse(file_contents):
             raise ParseError('Duplicate transaction on lines {0}'.format(transaction.get('line_numbers')))
         if has_duplicate_station_name_keys(kv_pairs):
             raise ParseError('Parsing error on lines {0}: Duplicate station name codes'.format(transaction.get('line_numbers')))
+        if not has_transaction_type(kv_pairs):
+            raise ParseError('Parsing error on lines {0}: Missing "T" (transaction type) component'.format(transaction.get('line_numbers')))
 
         this_result = translate_keys_to_attributes(kv_pairs)
         this_result['agencyCode'] = transaction.get('agencyCode')
@@ -248,6 +261,8 @@ def parse(file_contents):
 
     # Filter out any transaction that is not for the sitefile
     site_results = [result for result in results if result.get('databaseTableIdentifier') == '0']
+
+    # Check to see if the
 
     # Do another check for duplicate transactions that are not adjacent
     sites = [(site_result.get('agencyCode'), site_result.get('siteNumber')) for site_result in site_results]

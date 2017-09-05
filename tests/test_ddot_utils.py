@@ -111,6 +111,10 @@ class ParseTestCase(TestCase):
             'USGS 680042108433301 R=1* T=A* 12=\'YELLVILLE WATERWORKS\'*'
         )
 
+        self.missing_transaction_type = (
+            'USGS 680042108433301 R=1* 12=\'YELLVILLE WATERWORKS\'*'
+        )
+
         self.long_line = (
             'USGS 480042108433301 R=0* T=A* 12=\'YELLVILLE WATERWORKS JUNK JUNK JUNK JUNK STUFF STUFF STUFF STUFF\'* 11=S* 35=M* 36=NAD27*\n'
             'USGS 480042108433301 39=WS* 813=CST* 814=Y* 3=C* 41=US*'
@@ -255,3 +259,9 @@ class ParseTestCase(TestCase):
         self.assertEqual(len(result), 2)
         sites_in_result = [this_result.get('siteNumber') for this_result in result]
         self.assertNotIn('680042108433301', sites_in_result)
+
+    def test_with_missing_transaction_type(self):
+        with self.assertRaises(ParseError) as err:
+            result = parse('XXXXX\n' + self.location1 + '\n' + self.missing_transaction_type)
+        self.assertIn('Missing "T"', err.exception.message)
+        self.assertIn('lines [5]', err.exception.message)
