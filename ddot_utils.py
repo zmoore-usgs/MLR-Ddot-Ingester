@@ -56,6 +56,8 @@ KEY_TO_ATTR_MAPPING = {
     'T': 'transactionType'
 }
 
+DATABASE_TABLE_ID_TOKEN = 'R='
+
 class ParseError(Exception):
 
     def __init__(self, message):
@@ -96,15 +98,15 @@ def get_lines(content):
     return lines
 
 
-
 def get_transactions(lines):
     '''
 
     :param list of str lines:
     :rtype: list of dicts for each location in content
-    :return: Returns a list of dictionaries. Each dictionary has three properties:
+    :return: Returns a list of dictionaries. Each dictionary has four properties:
         agencyCode contains a string agency code, siteNumber contains the string site number,
-        and 'key_value_pairs' returns all of the key value pairs concatenated for the location
+        key_value_pairs' returns all of the key value pairs concatenated for the location, and
+        'line_numbers returns the line numbers that this transaction appears in the ddot file.
     '''
 
     # line indexes are incremented by two to account for the intro line and that the array starts at zero
@@ -115,6 +117,18 @@ def get_transactions(lines):
         line_numbers = []
         key_value_pairs = []
         for line in location_group:
+            # This checks to see if a new transaction on the same site has been detected
+            if DATABASE_TABLE_ID_TOKEN == line[1][0:2] and key_value_pairs:
+                transaction = {
+                    'agencyCode': location[0:5],
+                    'siteNumber': location[5:20],
+                    'key_value_pairs': ' '.join(key_value_pairs),
+                    'line_numbers': line_numbers
+                }
+                result.append(transaction)
+                line_numbers = []
+                key_value_pairs = []
+
             key_value_pairs.append(line[1])
             line_numbers.append(line[2])
         transaction = {
@@ -124,6 +138,7 @@ def get_transactions(lines):
             'line_numbers': line_numbers
         }
         result.append(transaction)
+
 
     return result
 
@@ -137,7 +152,7 @@ def parse_key_value_pairs(kv_pairs_str):
     '''
 
     SEPARATOR_TOKENS = re.compile('[=#]')
-    VALUE_ENDING_TOKENS = re.compile('[\*\$]')
+    VALUE_ENDING_TOKENS = re.compile('[\*\$]\s*')
 
     test_string = kv_pairs_str
     result = []
@@ -157,7 +172,7 @@ def parse_key_value_pairs(kv_pairs_str):
             raise ParseError('Could not find value ending token in {0}'.format(test_string))
         result.append((key, value))
 
-        test_string = test_string[value_ending_match.end() + 1:]
+        test_string = test_string[value_ending_match.end():]
 
     return result
 
@@ -178,22 +193,6 @@ def has_duplicate_station_name_keys(kv_pairs):
                 found = True
     return has_duplicate
 
-def has_duplicate_transaction(kv_pairs):
-    '''
-    :param list of tuples kv_pairs:
-    :return: Boolean
-    '''
-
-    found = False
-    has_duplicate = False
-    for (key, value) in kv_pairs:
-        if KEY_TO_ATTR_MAPPING.get(key) == 'databaseTableIdentifier':
-            if found:
-                has_duplicate = True
-                break
-            else:
-                found = True
-    return has_duplicate
 
 def has_transaction_type(kv_pairs):
     '''
@@ -243,8 +242,6 @@ def parse(file_contents):
         except ParseError as err:
             raise ParseError('Parsing error on lines{0}: line {1}'.format(transaction.get('line_numbers'), err.message))
 
-        if has_duplicate_transaction(kv_pairs):
-            raise ParseError('Duplicate transaction on lines {0}'.format(transaction.get('line_numbers')))
         if has_duplicate_station_name_keys(kv_pairs):
             raise ParseError('Parsing error on lines {0}: Duplicate station name codes'.format(transaction.get('line_numbers')))
         if not has_transaction_type(kv_pairs):
@@ -265,8 +262,9 @@ def parse(file_contents):
 
     # Do another check for duplicate transactions that are not adjacent
     sites = [(site_result.get('agencyCode'), site_result.get('siteNumber')) for site_result in site_results]
-    if len(sites) != len(set(sites)):
-       raise ParseError('Duplicate transaction for a site')
+    duplicate_sites = set([site for site in sites if sites.count(site) > 1])
+    if duplicate_sites:
+       raise ParseError('Duplicate transaction for sites: {0}'.format(duplicate_sites))
 
     return site_results
 
