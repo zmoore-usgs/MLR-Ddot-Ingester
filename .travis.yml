@@ -9,5 +9,5 @@ install:
   - pip install coveralls
 
 script:
-  - coverage run --omit=tests/*.py -m unittest
+  - coverage run --omit=tests/*.py,/home/travis/virtualenv/* -m unittest
   - coveralls
