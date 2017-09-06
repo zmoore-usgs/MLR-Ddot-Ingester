@@ -79,7 +79,7 @@ parser.add_argument('file', type=FileStorage, location='files', required=True)
 class DdotIngester(Resource):
 
     @api.response(200, 'Successfully uploaded and parsed', [location_transaction_model])
-    @api.response(401, 'File can not be parsed', error_model)
+    @api.response(400, 'File can not be parsed', error_model)
     @api.expect(parser)
     def post(self):
         args = parser.parse_args()
