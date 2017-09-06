@@ -17,8 +17,6 @@ location_transaction_model = api.model('LocationTransactionModel', {
     'siteNumber' : fields.String(),
     'stationName' : fields.String(),
     'siteTypeCode': fields.String(),
-    'decimalLatitude': fields.String(),
-    'decimalLongitude': fields.String(),
     'latitude': fields.String(),
     'longitude': fields.String(),
     'coordinateAccuracyCode': fields.String(),
@@ -66,10 +64,6 @@ location_transaction_model = api.model('LocationTransactionModel', {
     'remarks': fields.String(),
     'siteWebReadyCode': fields.String(),
     'gwFileCode': fields.String(),
-    'created': fields.String(),
-    'createdBy': fields.String(),
-    'updated': fields.String(),
-    'updatedBy': fields.String(),
     'databaseTableIdentifier': fields.String(),
     'transactionType': fields.String(),
 })
@@ -79,6 +73,7 @@ error_model = api.model('ErrorModel', {
 
 parser = reqparse.RequestParser()
 parser.add_argument('file', type=FileStorage, location='files', required=True)
+
 
 @api.route('/ddots')
 class DdotIngester(Resource):

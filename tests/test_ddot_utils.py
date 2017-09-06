@@ -91,19 +91,28 @@ class ParseTestCase(TestCase):
 
     def setUp(self):
         self.maxDiff = None
+
+        self.location1_transaction_start = 'USGS 480042108433301 R=0* T=A*'
         self.location1 = (
-            'USGS 480042108433301 R=0* T=A* 12=\'YELLVILLE WATERWORKS\'* 11=S* 35=M* 36=NAD27*\n'
-            'USGS 480042108433301 6=05* 7=05* 8=089* 20=11010003* 802=NNNNNNNNNNNNYNNNNNNN*\n'
+            'USGS 480042108433301 R=0* T=A* 12=\'YELLVILLE WATERWORKS\'* 11=S* 35=M* 36=NAD27*\r\n'
+            'USGS 480042108433301 6=05* 7=05* 8=089* 20=11010003* 802=NNNNNNNNNNNNYNNNNNNN*\r\n'
             'USGS 480042108433301 39=WS* 813=CST* 814=Y* 3=C* 41=US*'
         )
         self.location2 = (
             'USEPA123456789012345 R=0* T=A* 12=\'INTAKE ON LAKE WOBEGON\'* 802=FA-DV\n'
-            'USEPA123456789012345 Long Line* 35=M* 36=NAD27* 6=05* 7=05* 8=023* 20=11010014*'
+            'USEPA123456789012345 Long Line* 35=* 36=NAD27* 6=05* 7=05* 8=023* 20=11010014*'
         )
 
         self.location3 = (
             'USGS 580042108433301 R=0* T=A*\n'
             'USGS 580042108433301 12'
+        )
+        self.non_location = (
+            'USGS 680042108433301 R=1* T=A* 12=\'YELLVILLE WATERWORKS\'*'
+        )
+
+        self.missing_transaction_type = (
+            'USGS 680042108433301 R=1* 12=\'YELLVILLE WATERWORKS\'*'
         )
 
         self.long_line = (
@@ -132,7 +141,7 @@ class ParseTestCase(TestCase):
             'siteNumber': '480042108433301',
             'databaseTableIdentifier': '0',
             'transactionType': 'A',
-            'stationName': '\'YELLVILLE WATERWORKS\'',
+            'stationName': 'YELLVILLE WATERWORKS',
             'coordinateAccuracyCode': 'S',
             'coordinateMethodCode': 'M',
             'coordinateDatumCode': 'NAD27',
@@ -149,14 +158,14 @@ class ParseTestCase(TestCase):
         })
 
     def test_with_two_locations(self):
-        result = parse('XXXXXXX\n' + self.location1 + '\n' + self.location2)
+        result = parse('XXXXXXX\n' + self.location1 + '\r\n' + self.location2)
         self.assertEqual(len(result), 2)
         self.assertEqual(result[0], {
             'agencyCode': 'USGS ',
             'siteNumber': '480042108433301',
             'databaseTableIdentifier': '0',
             'transactionType': 'A',
-            'stationName': '\'YELLVILLE WATERWORKS\'',
+            'stationName': 'YELLVILLE WATERWORKS',
             'coordinateAccuracyCode': 'S',
             'coordinateMethodCode': 'M',
             'coordinateDatumCode': 'NAD27',
@@ -176,9 +185,9 @@ class ParseTestCase(TestCase):
             'siteNumber': '123456789012345',
             'databaseTableIdentifier': '0',
             'transactionType': 'A',
-            'stationName': '\'INTAKE ON LAKE WOBEGON\'',
+            'stationName': 'INTAKE ON LAKE WOBEGON',
             'siteTypeCode': 'FA-DV Long Line',
-            'coordinateMethodCode': 'M',
+            'coordinateMethodCode': '',
             'coordinateDatumCode': 'NAD27',
             'districtCode': '05',
             'stateFipsCode': '05',
@@ -204,6 +213,20 @@ class ParseTestCase(TestCase):
         self.assertIn('2, 3, 4, 5', err.exception.message)
         self.assertIn('Duplicate station name', err.exception.message)
 
+    def test_with_trailing_quote_and_no_starting_quote_on_station_name(self):
+        result = parse('XXXXXX\n' +
+                       self.location1_transaction_start +
+                       ' 12=\'YELLVILLE WATERWORKS*'
+        )
+        self.assertEqual(result[0].get('stationName'), '\'YELLVILLE WATERWORKS')
+
+    def test_with_starting_quote_and_no_ending_quote_on_station_name(self):
+        result = parse('XXXXXX\n' +
+                       self.location1_transaction_start +
+                       ' 12=YELLVILLE WATERWORKS\'*'
+        )
+        self.assertEqual(result[0].get('stationName'), 'YELLVILLE WATERWORKS\'')
+
     def test_with_unknown_code(self):
         result = parse('XXXXX\n' + self.location2 + '\n' + 'USEPA123456789012345 ZZ=13*')
         self.assertEqual(result[0], {
@@ -211,12 +234,34 @@ class ParseTestCase(TestCase):
             'siteNumber': '123456789012345',
             'databaseTableIdentifier': '0',
             'transactionType': 'A',
-            'stationName': '\'INTAKE ON LAKE WOBEGON\'',
+            'stationName': 'INTAKE ON LAKE WOBEGON',
             'siteTypeCode': 'FA-DV Long Line',
-            'coordinateMethodCode': 'M',
+            'coordinateMethodCode': '',
             'coordinateDatumCode': 'NAD27',
             'districtCode': '05',
             'stateFipsCode': '05',
             'countyCode': '023',
             'hydrologicUnitCode': '11010014'
         })
+
+    def test_with_duplicate_adjacent_transactions(self):
+        with self.assertRaises(ParseError) as err:
+            result = parse('XXXXX\n' + self.location1 + '\n' + self.location1)
+        self.assertIn('Duplicate transaction', err.exception.message)
+
+    def test_with_duplicate_non_adjacent_transactions(self):
+        with self.assertRaises(ParseError) as err:
+            result = parse('XXXXXX\n' + self.location1 + '\n' + self.location2 + '\n' + self.location1)
+        self.assertIn('Duplicate transaction', err.exception.message)
+
+    def test_with_nonsite_transactions(self):
+        result = parse('XXXXXX\n' + self.location1 + '\n' + self.non_location + '\n' + self.location2)
+        self.assertEqual(len(result), 2)
+        sites_in_result = [this_result.get('siteNumber') for this_result in result]
+        self.assertNotIn('680042108433301', sites_in_result)
+
+    def test_with_missing_transaction_type(self):
+        with self.assertRaises(ParseError) as err:
+            result = parse('XXXXX\n' + self.location1 + '\n' + self.missing_transaction_type)
+        self.assertIn('Missing "T"', err.exception.message)
+        self.assertIn('lines [5]', err.exception.message)
