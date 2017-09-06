@@ -260,7 +260,7 @@ def parse(file_contents):
     # Filter out any transaction that is not for the sitefile
     site_results = [result for result in results if result.get('databaseTableIdentifier') == '0']
 
-    # Do another check for duplicate transactions that are not adjacent
+    # Do another check for duplicate transactions
     sites = [(site_result.get('agencyCode'), site_result.get('siteNumber')) for site_result in site_results]
     duplicate_sites = set([site for site in sites if sites.count(site) > 1])
     if duplicate_sites:
