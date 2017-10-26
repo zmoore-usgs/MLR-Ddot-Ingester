@@ -224,6 +224,16 @@ def remove_leading_and_trailing_single_quotes(value):
         result = value
     return result
 
+def add_leading_space(value):
+    '''
+    If the first character of value is not a space or '-' then, prepend a space to value
+    and return the result, otherwise return value.
+    :param str value:
+    :return: str
+    '''
+
+    return value if len(value) > 0 and (value[0] == ' ' or value[0] == '-') else ' ' + value
+
 
 def parse(file_contents):
     '''
@@ -254,6 +264,12 @@ def parse(file_contents):
         # Any special processing on values
         if 'stationName' in this_result:
             this_result['stationName'] = remove_leading_and_trailing_single_quotes(this_result['stationName'])
+
+        if 'latitude' in this_result:
+            this_result['latitude'] = add_leading_space(this_result['latitude'])
+
+        if 'longitude' in this_result:
+            this_result['longitude'] = add_leading_space(this_result['longitude'])
 
         results.append(this_result)
 

@@ -120,6 +120,7 @@ class ParseTestCase(TestCase):
             'USGS 480042108433301 39=WS* 813=CST* 814=Y* 3=C* 41=US*'
         )
 
+
     def test_no_contents(self):
         with self.assertRaises(ParseError):
             parse('')
@@ -265,3 +266,27 @@ class ParseTestCase(TestCase):
             result = parse('XXXXX\n' + self.location1 + '\n' + self.missing_transaction_type)
         self.assertIn('Missing "T"', err.exception.message)
         self.assertIn('lines [5]', err.exception.message)
+
+    def test_with_latitude_without_space(self):
+        result = parse('XXXXXX\n' + self.location1_transaction_start + ' 9=400000*')
+        self.assertEqual(result[0]['latitude'], ' 400000')
+
+    def test_with_latitude_with_space(self):
+        result = parse('XXXXXX\n' + self.location1_transaction_start + ' 9= 400000*')
+        self.assertEqual(result[0]['latitude'], ' 400000')
+
+    def test_with_latitude_with_dash(self):
+        result = parse('XXXXXX\n' + self.location1_transaction_start + ' 9=-400000*')
+        self.assertEqual(result[0]['latitude'], '-400000')
+
+    def test_with_longitude_without_space(self):
+        result = parse('XXXXXX\n' + self.location1_transaction_start + ' 10=1000000*')
+        self.assertEqual(result[0]['longitude'], ' 1000000')
+
+    def test_with_longitude_with_space(self):
+        result = parse('XXXXXX\n' + self.location1_transaction_start + ' 10= 1000000*')
+        self.assertEqual(result[0]['longitude'], ' 1000000')
+
+    def test_with_longitude_with_dash(self):
+        result = parse('XXXXXX\n' + self.location1_transaction_start + ' 10=-1000000*')
+        self.assertEqual(result[0]['longitude'], '-1000000')
