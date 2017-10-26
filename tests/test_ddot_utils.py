@@ -279,6 +279,10 @@ class ParseTestCase(TestCase):
         result = parse('XXXXXX\n' + self.location1_transaction_start + ' 9=-400000*')
         self.assertEqual(result[0]['latitude'], '-400000')
 
+    def test_empty_latitude(self):
+        result = parse('XXXXXX\n' + self.location1_transaction_start + ' 9=*')
+        self.assertEqual(result[0]['latitude'], '')
+
     def test_with_longitude_without_space(self):
         result = parse('XXXXXX\n' + self.location1_transaction_start + ' 10=1000000*')
         self.assertEqual(result[0]['longitude'], ' 1000000')
@@ -290,3 +294,7 @@ class ParseTestCase(TestCase):
     def test_with_longitude_with_dash(self):
         result = parse('XXXXXX\n' + self.location1_transaction_start + ' 10=-1000000*')
         self.assertEqual(result[0]['longitude'], '-1000000')
+
+    def test_empty_longitude(self):
+        result = parse('XXXXXX\n' + self.location1_transaction_start + ' 10=*')
+        self.assertEqual(result[0]['longitude'], '')

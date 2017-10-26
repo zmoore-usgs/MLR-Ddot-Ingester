@@ -224,6 +224,7 @@ def remove_leading_and_trailing_single_quotes(value):
         result = value
     return result
 
+
 def add_leading_space(value):
     '''
     If the first character of value is not a space or '-' then, prepend a space to value
@@ -231,8 +232,7 @@ def add_leading_space(value):
     :param str value:
     :return: str
     '''
-
-    return value if len(value) > 0 and (value[0] == ' ' or value[0] == '-') else ' ' + value
+    return value if len(value) == 0 or (value[0] == ' ' or value[0] == '-') else ' ' + value
 
 
 def parse(file_contents):
