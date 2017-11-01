@@ -18,4 +18,4 @@ is not true, the latitude or longitude field parsed from the ddot file has a spa
 - Swagger document at /api endpoint
 
 [Unreleased]: https://github.com/USGS-CIDA/MLR-Ddot-Ingester/compare/MLR-Ddot-Ingester-0.2.0...master
-[0.2] https://github.com/USGS-CIDA/MLR-Ddot-Ingester/compare/MLR-Ddot-Ingester-0.2.0...MLR-Ddot-Ingester-0.1.0
+[0.2] https://github.com/USGS-CIDA/MLR-Ddot-Ingester/compare/MLR-Ddot-Ingester-0.1.0...MLR-Ddot-Ingester-0.2.0
