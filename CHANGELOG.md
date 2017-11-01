@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 is not true, the latitude or longitude field parsed from the ddot file has a space prepended to it.
 - This CHANGELOG file
 
-## [0.1] - 2017-10-02
+## 0.1 - 2017-10-02
 ### Added
 - POST to upload a ddot file and parse into a json object at /ddots endpoint
 - Swagger document at /api endpoint
