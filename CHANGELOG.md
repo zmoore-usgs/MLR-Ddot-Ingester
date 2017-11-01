@@ -17,4 +17,5 @@ is not true, the latitude or longitude field parsed from the ddot file has a spa
 - POST to upload a ddot file and parse into a json object at /ddots endpoint
 - Swagger document at /api endpoint
 
-[Unreleased]: https://github.com/USGS-CIDA/MLR-Ddot-Ingester/compare/master...MLR-Ddot-Ingester-0.1.0
+[Unreleased]: https://github.com/USGS-CIDA/MLR-Ddot-Ingester/compare/MLR-Ddot-Ingester-0.2.0...master
+[0.2] https://github.com/USGS-CIDA/MLR-Ddot-Ingester/compare/MLR-Ddot-Ingester-0.2.0...MLR-Ddot-Ingester-0.1.0
