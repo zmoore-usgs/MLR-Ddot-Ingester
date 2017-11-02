@@ -1,6 +1,8 @@
+
+import pkg_resources
+
 from flask_restplus import Api, Resource, reqparse, fields
 from werkzeug.datastructures import FileStorage
-
 
 from app import application
 from ddot_utils import ParseError, parse as parse_ddot
@@ -13,9 +15,9 @@ api = Api(application,
           doc='/api')
 
 location_transaction_model = api.model('LocationTransactionModel', {
-    'agencyCode' : fields.String(),
-    'siteNumber' : fields.String(),
-    'stationName' : fields.String(),
+    'agencyCode': fields.String(),
+    'siteNumber': fields.String(),
+    'stationName': fields.String(),
     'siteTypeCode': fields.String(),
     'latitude': fields.String(),
     'longitude': fields.String(),
@@ -95,3 +97,29 @@ class DdotIngester(Resource):
             response, status = result, 200
 
         return response, status
+
+
+version_model = api.model('VersionModel', {
+    'version': fields.String,
+    'artifact': fields.String
+})
+
+
+@api.route('/version')
+class Version(Resource):
+
+    @api.response(200, 'Success', version_model)
+    def get(self):
+        try:
+            distribution = pkg_resources.get_distribution('usgs_wma_mlr_ddot_ingester')
+        except pkg_resources.DistributionNotFound:
+            resp = {
+                "version": "local_development",
+                "artifact": None
+            }
+        else:
+            resp = {
+                "version": distribution.version,
+                "artifact": distribution.project_name
+            }
+        return resp
