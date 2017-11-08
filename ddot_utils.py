@@ -195,11 +195,18 @@ def has_duplicate_station_name_keys(kv_pairs):
 
 
 def has_transaction_type(kv_pairs):
-    '''
+    """
     :param list of tuples kv_pairs:
     :return: Boolean
-    '''
+    """
     return 1 == len([(key) for (key, value) in kv_pairs if key == 'T'])
+
+def invalid_key_codes(kv_pairs):
+    """
+        :param list of tuples kv_pairs:
+        :return: tuple of invalid codes
+    """
+    return [key for (key, value) in kv_pairs if key not in KEY_TO_ATTR_MAPPING]
 
 
 def translate_keys_to_attributes(kv_pairs):
@@ -256,6 +263,10 @@ def parse(file_contents):
             raise ParseError('Parsing error on lines {0}: Duplicate station name codes'.format(transaction.get('line_numbers')))
         if not has_transaction_type(kv_pairs):
             raise ParseError('Parsing error on lines {0}: Missing "T" (transaction type) component'.format(transaction.get('line_numbers')))
+
+        invalid_codes = invalid_key_codes(kv_pairs)
+        if invalid_codes:
+            raise ParseError('Parsing error on lines {0}: Invalid component codes {1}'.format(transaction.get('line_numbers'), ', '.join(invalid_codes)))
 
         this_result = translate_keys_to_attributes(kv_pairs)
         this_result['agencyCode'] = transaction.get('agencyCode')
