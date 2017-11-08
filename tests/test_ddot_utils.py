@@ -262,6 +262,12 @@ class ParseTestCase(TestCase):
         self.assertIn('999, 998', err.exception.message)
         self.assertIn('lines [2, 3]', err.exception.message)
 
+    def test_invalid_transaction_type(self):
+        with self.assertRaises(ParseError) as err:
+            result = parse('XXXXX\n' + 'USGS 480042108433301 R=0* T=B*')
+        self.assertIn('Invalid transaction', err.exception.message)
+        self.assertIn('lines [2]', err.exception.message)
+
     def test_with_latitude_without_space(self):
         result = parse('XXXXXX\n' + self.location1_transaction_start + ' 9=400000*')
         self.assertEqual(result[0]['latitude'], ' 400000')
