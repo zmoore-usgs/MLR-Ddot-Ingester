@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - GET endpoint /version to show the current version and artifact name
 - Check for invalid transaction type
 - Check for unknown component codes
+- Authentication for the /ddots endpont
 
 ## [0.2] - 2017-11-01
 ### Added
