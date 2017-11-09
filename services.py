@@ -1,10 +1,10 @@
 
 import pkg_resources
 
-from flask import request
 from flask_restplus import Api, Resource, reqparse, fields
-from flask_restplus_jwt import JWTRestplusManager, jwt_required
 from werkzeug.datastructures import FileStorage
+
+from flask_restplus_jwt import JWTRestplusManager, jwt_required
 
 from app import application
 from ddot_utils import ParseError, parse as parse_ddot
