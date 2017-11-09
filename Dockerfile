@@ -8,6 +8,8 @@ RUN apk add --update \
   python3-dev \
   build-base \
   ca-certificates \
+  libffi-dev \
+  openssl-dev \
   openssl
 COPY gunicorn_config.py /local/gunicorn_config.py
 RUN export PIP_CERT="/etc/ssl/certs/ca-certificates.crt" && \
