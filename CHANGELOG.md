@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Added
 - GET endpoint /version to show the current version and artifact name
+- Authentication for the /ddots endpont
 
 ## [0.2] - 2017-11-01
 ### Added
