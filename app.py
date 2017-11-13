@@ -8,7 +8,7 @@ application = Flask(__name__)
 
 application.config.from_object('config')
 
-PROJECT_DIR = PROJECT_DIR = os.path.dirname(__file__)
+PROJECT_DIR = os.path.dirname(__file__)
 if os.path.exists(os.path.join(PROJECT_DIR, '.env')):
     application.config.from_pyfile('.env')
 
