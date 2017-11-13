@@ -54,7 +54,8 @@ Below is an example of how to build and run.
     --build-arg build_type=snapshots \
     --env auth_token_key_url=https://path.com/to/token_key\
     --env jwt_algorithm=HS256 \
-    --env jwt_decode_audience=string_in_aud_claim_in_token
+    --env jwt_decode_audience=string_in_aud_claim_in_token \
+    --env auth_cert_path=path_to_auth_cert or False (not recommended) if disabling SSL verification \
     -t ddot_ingester -f Dockerfile-DOI .
 % docker run --publish 5000:7010 ddot_ingester
 ```
