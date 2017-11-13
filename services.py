@@ -24,7 +24,6 @@ api = Api(application,
           default='Ddot ingestor',
           default_label='Ddot Ingestor Endpoint',
           doc='/api',
-          security='apiKey',
           authorizations=authorizations
           )
 
@@ -100,6 +99,7 @@ class DdotIngester(Resource):
     @api.response(200, 'Successfully uploaded and parsed', [location_transaction_model])
     @api.response(400, 'File can not be parsed', error_model)
     @api.response(401, 'Not authorized')
+    @api.doc(security='apikey')
     @api.expect(parser)
     @jwt_required
     def post(self):
