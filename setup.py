@@ -11,6 +11,11 @@ def read_requirements(filename):
     with open(filename, 'r') as req:
         requirements = req.readlines()
     install_requires = [r.strip() for r in requirements if r.find('git+') != 0]
+    dependency_links = [r.strip() for r in requirements if r.find('git+') == 0]
+    return {
+        'install_requires': install_requires,
+        'dependency_links': dependency_links
+    }
     return install_requires
 
 
@@ -36,9 +41,10 @@ setup(name='usgs_wma_mlr_ddot_ingester',
       author_email='mlr-devs@usgs.gov',
       include_package_data=False,
       long_description =read('README.md'),
-      install_requires=requirements,
+      install_requires=requirements['install_requires'],
+      dependency_links=requirements['dependency_links'],
       test_loader='unittest:TestLoader',
       platforms='any',
       zip_safe=False,
-      py_modules=['app', 'config', 'services', 'ddot_utils', 'flask_restplus_jwt']
+      py_modules=['app', 'config', 'services', 'ddot_utils']
       )
