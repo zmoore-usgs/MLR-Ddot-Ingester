@@ -229,6 +229,17 @@ def remove_leading_and_trailing_single_quotes(value):
         result = value
     return result
 
+def update_c_code_to_y_code(value):
+    """
+    :param str value:
+    :return: str: Returns value unless value is a 'C', then returns a 'Y'.
+    """
+    if value == 'C':
+        result = 'Y'
+    else:
+        result = value
+    return result
+
 
 def add_leading_space(value):
     """
@@ -281,6 +292,9 @@ def parse(file_contents):
 
         if 'longitude' in this_result:
             this_result['longitude'] = add_leading_space(this_result['longitude'])
+
+        if 'siteWebReadyCode' in this_result:
+            this_result['siteWebReadyCode'] = update_c_code_to_y_code(this_result['siteWebReadyCode'])
 
         results.append(this_result)
 

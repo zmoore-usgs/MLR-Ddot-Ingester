@@ -233,6 +233,19 @@ class ParseTestCase(TestCase):
         )
         self.assertEqual(result[0].get('stationName'), 'YELLVILLE WATERWORKS\'')
 
+    def test_with_site_web_ready_code_of_c(self):
+        result = parse('XXXXXX\n' +
+                       self.location1_transaction_start +
+                       ' 32=C*'
+        )
+        self.assertEqual(result[0].get('siteWebReadyCode'), 'Y')
+
+    def test_with_site_web_ready_code_of_not_c(self):
+        result = parse('XXXXXX\n' +
+                       self.location1_transaction_start +
+                       ' 32=P*'
+        )
+        self.assertEqual(result[0].get('siteWebReadyCode'), 'P')
 
     def test_with_duplicate_adjacent_transactions(self):
         with self.assertRaises(ParseError) as err:
