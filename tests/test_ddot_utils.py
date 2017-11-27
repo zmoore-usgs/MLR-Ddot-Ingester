@@ -115,10 +115,16 @@ class ParseTestCase(TestCase):
             'USGS 680042108433301 R=1* 12=\'YELLVILLE WATERWORKS\'*'
         )
 
+        self.invalid_component_codes = (
+            'USEPA123456789012345 R=0 * T=A * 12=\'INTAKE ON LAKE WOBEGON\'*\r\n'
+            'USEPA123456789012345 802=FA-DV* 999=This* 998=That*\n'
+        )
+
         self.long_line = (
             'USGS 480042108433301 R=0* T=A* 12=\'YELLVILLE WATERWORKS JUNK JUNK JUNK JUNK STUFF STUFF STUFF STUFF\'* 11=S* 35=M* 36=NAD27*\n'
             'USGS 480042108433301 39=WS* 813=CST* 814=Y* 3=C* 41=US*'
         )
+
 
     def test_no_contents(self):
         with self.assertRaises(ParseError):
@@ -227,22 +233,6 @@ class ParseTestCase(TestCase):
         )
         self.assertEqual(result[0].get('stationName'), 'YELLVILLE WATERWORKS\'')
 
-    def test_with_unknown_code(self):
-        result = parse('XXXXX\n' + self.location2 + '\n' + 'USEPA123456789012345 ZZ=13*')
-        self.assertEqual(result[0], {
-            'agencyCode': 'USEPA',
-            'siteNumber': '123456789012345',
-            'databaseTableIdentifier': '0',
-            'transactionType': 'A',
-            'stationName': 'INTAKE ON LAKE WOBEGON',
-            'siteTypeCode': 'FA-DV Long Line',
-            'coordinateMethodCode': '',
-            'coordinateDatumCode': 'NAD27',
-            'districtCode': '05',
-            'stateFipsCode': '05',
-            'countyCode': '023',
-            'hydrologicUnitCode': '11010014'
-        })
 
     def test_with_duplicate_adjacent_transactions(self):
         with self.assertRaises(ParseError) as err:
@@ -265,3 +255,47 @@ class ParseTestCase(TestCase):
             result = parse('XXXXX\n' + self.location1 + '\n' + self.missing_transaction_type)
         self.assertIn('Missing "T"', err.exception.message)
         self.assertIn('lines [5]', err.exception.message)
+
+    def test_with_bad_component_values(self):
+        with self.assertRaises(ParseError) as err:
+            result = parse('XXXXX\n' + self.invalid_component_codes)
+        self.assertIn('999, 998', err.exception.message)
+        self.assertIn('lines [2, 3]', err.exception.message)
+
+    def test_invalid_transaction_type(self):
+        with self.assertRaises(ParseError) as err:
+            result = parse('XXXXX\n' + 'USGS 480042108433301 R=0* T=B*')
+        self.assertIn('Invalid transaction', err.exception.message)
+        self.assertIn('lines [2]', err.exception.message)
+
+    def test_with_latitude_without_space(self):
+        result = parse('XXXXXX\n' + self.location1_transaction_start + ' 9=400000*')
+        self.assertEqual(result[0]['latitude'], ' 400000')
+
+    def test_with_latitude_with_space(self):
+        result = parse('XXXXXX\n' + self.location1_transaction_start + ' 9= 400000*')
+        self.assertEqual(result[0]['latitude'], ' 400000')
+
+    def test_with_latitude_with_dash(self):
+        result = parse('XXXXXX\n' + self.location1_transaction_start + ' 9=-400000*')
+        self.assertEqual(result[0]['latitude'], '-400000')
+
+    def test_empty_latitude(self):
+        result = parse('XXXXXX\n' + self.location1_transaction_start + ' 9=*')
+        self.assertEqual(result[0]['latitude'], '')
+
+    def test_with_longitude_without_space(self):
+        result = parse('XXXXXX\n' + self.location1_transaction_start + ' 10=1000000*')
+        self.assertEqual(result[0]['longitude'], ' 1000000')
+
+    def test_with_longitude_with_space(self):
+        result = parse('XXXXXX\n' + self.location1_transaction_start + ' 10= 1000000*')
+        self.assertEqual(result[0]['longitude'], ' 1000000')
+
+    def test_with_longitude_with_dash(self):
+        result = parse('XXXXXX\n' + self.location1_transaction_start + ' 10=-1000000*')
+        self.assertEqual(result[0]['longitude'], '-1000000')
+
+    def test_empty_longitude(self):
+        result = parse('XXXXXX\n' + self.location1_transaction_start + ' 10=*')
+        self.assertEqual(result[0]['longitude'], '')

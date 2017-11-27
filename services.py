@@ -1,21 +1,39 @@
+
+import pkg_resources
+
 from flask_restplus import Api, Resource, reqparse, fields
 from werkzeug.datastructures import FileStorage
 
+from flask_restplus_jwt import JWTRestplusManager, jwt_required
 
 from app import application
 from ddot_utils import ParseError, parse as parse_ddot
+
+# This will add the Authorize button to the swagger docs
+authorizations = {
+    'apikey': {
+        'type': 'apiKey',
+        'in': 'header',
+        'name': 'Authorization'
+    }
+}
 
 api = Api(application,
           title='D dot File Ingestor',
           description='Provides a service to upload a "d." file, parse it, and respond back with a response containing the parsed information',
           default='Ddot ingestor',
           default_label='Ddot Ingestor Endpoint',
-          doc='/api')
+          doc='/api',
+          authorizations=authorizations
+          )
+
+# Setup the Flask-JWT-Simple extension
+jwt = JWTRestplusManager(api, application)
 
 location_transaction_model = api.model('LocationTransactionModel', {
-    'agencyCode' : fields.String(),
-    'siteNumber' : fields.String(),
-    'stationName' : fields.String(),
+    'agencyCode': fields.String(),
+    'siteNumber': fields.String(),
+    'stationName': fields.String(),
     'siteTypeCode': fields.String(),
     'latitude': fields.String(),
     'longitude': fields.String(),
@@ -80,7 +98,10 @@ class DdotIngester(Resource):
 
     @api.response(200, 'Successfully uploaded and parsed', [location_transaction_model])
     @api.response(400, 'File can not be parsed', error_model)
+    @api.response(401, 'Not authorized')
+    @api.doc(security='apikey')
     @api.expect(parser)
+    @jwt_required
     def post(self):
         args = parser.parse_args()
         f = args['file']
@@ -95,3 +116,29 @@ class DdotIngester(Resource):
             response, status = result, 200
 
         return response, status
+
+
+version_model = api.model('VersionModel', {
+    'version': fields.String,
+    'artifact': fields.String
+})
+
+
+@api.route('/version')
+class Version(Resource):
+
+    @api.response(200, 'Success', version_model)
+    def get(self):
+        try:
+            distribution = pkg_resources.get_distribution('usgs_wma_mlr_ddot_ingester')
+        except pkg_resources.DistributionNotFound:
+            resp = {
+                "version": "local_development",
+                "artifact": None
+            }
+        else:
+            resp = {
+                "version": distribution.version,
+                "artifact": distribution.project_name
+            }
+        return resp
