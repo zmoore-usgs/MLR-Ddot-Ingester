@@ -11,3 +11,4 @@ install:
 
 script:
   - coverage run --omit=tests/*.py,/home/travis/virtualenv/* -m unittest
+  - coveralls
