@@ -234,10 +234,8 @@ def update_c_code_to_y_code(value):
     :param str value:
     :return: str: Returns value unless value is a 'C', then returns a 'Y'.
     """
-    if value == 'C':
-        result = 'Y'
-    else:
-        result = value
+    result = 'Y' if value == 'C' else value
+
     return result
 
 
