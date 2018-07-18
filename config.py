@@ -5,10 +5,10 @@ DEBUG = False
 # The following four variables configure authentication
 
 # If using a public key, set the environment variable AUTH_TOKEN_KEY_URL to the url where it can be retrieved
-AUTH_TOKEN_KEY_URL = os.getenv('auth_token_key_url')
+AUTH_TOKEN_KEY_URL = os.getenv('oauthResourceTokenKeyUri')
 
 # Set the path to the certificate for AUTH_TOKEN_KEY_URL. If set to False then, SSL verification will not occur.
-AUTH_CERT_PATH = os.getenv('auth_cert_path', True)
+AUTH_CERT_PATH = os.getenv('ssl_cert_path', True)
 
 # If using the above, use the AUTH_TOKEN_KEY_ALGORITHM to set the algorithm. By default it will be RS256
 JWT_ALGORITHM = os.getenv('jwt_algorithm', 'HS256')
