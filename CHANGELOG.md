@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html). (Patch version X.Y.0 is implied if not specified.)
 
 ## [Unreleased]
+
+### Updated
+- isuftin@usgs.gov - Updated the version constraint for pyca/cryptography due to
+CVE https://nvd.nist.gov/vuln/detail/CVE-2018-10903
+
 ### Added
 - Dockerfile Healthcheck
 
@@ -22,7 +27,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [0.2] - 2017-11-01
 ### Added
-- The latitude and longitude fields are inspected to ensure that the first character is either a space or a '-'. If this 
+- The latitude and longitude fields are inspected to ensure that the first character is either a space or a '-'. If this
 is not true, the latitude or longitude field parsed from the ddot file has a space prepended to it.
 - This CHANGELOG file
 
