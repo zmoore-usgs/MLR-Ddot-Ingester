@@ -42,21 +42,3 @@ The output of this command will be the token that you can use. You will need to 
 See http://flask-jwt-simple.readthedocs.io/en/latest/options.html for the other options that you can use.
 
 
-The two docker files provided pull the artifact from cida.usgs.gov/artifactory. The build type and version should be specfied as
-build-arg's when building the image. The argument build_type should be 'snapshots' or 'releases'. The artfact_version 
-should be the version of the usgs-wma-mlr-ddot-ingestor that you want to be used in the docker container. 
-The optional build argument, 'listening_port' can be specified and defaults to 7010. This port will be exposed 
-by the container. The environment variables are used to configure authorization for the application. 
-To build within the DOI network, use Dockerfile-DOI and place the DOI cert in '/rootcrt'.
-Below is an example of how to build and run.
-```bash
-% docker build --build-arg artifact_version=0.1.0.dev0 \
-    --build-arg build_type=snapshots \
-    -t ddot_ingester -f Dockerfile-DOI .
-% docker run --publish 5000:7010 
-    --env auth_token_key_url=https://path.com/to/token_key\
-    --env jwt_algorithm=HS256 \
-    --env jwt_decode_audience=string_in_aud_claim_in_token \
-    --env auth_cert_path=path_to_auth_cert or False (not recommended) if disabling SSL verification \
-    ddot_ingester
-```
