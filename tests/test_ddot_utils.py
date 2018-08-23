@@ -301,6 +301,30 @@ class ParseTestCase(TestCase):
         result = parse('XXXXXX\n' + self.location1_transaction_start + ' 10=1000000*')
         self.assertEqual(result[0]['longitude'], ' 1000000')
 
+    def test_with_90_longitude_without_zero(self):
+        result = parse('XXXXXX\n' + self.location1_transaction_start + ' 10=900000*')
+        self.assertEqual(result[0]['longitude'], ' 0900000')
+
+    def test_with_neg_90_longitude_without_zero(self):
+        result = parse('XXXXXX\n' + self.location1_transaction_start + ' 10=-900000*')
+        self.assertEqual(result[0]['longitude'], '-0900000')
+
+    def test_with_100_longitude_without_zero(self):
+        result = parse('XXXXXX\n' + self.location1_transaction_start + ' 10=1000000*')
+        self.assertEqual(result[0]['longitude'], ' 1000000')
+
+    def test_with_neg_100_longitude_without_zero(self):
+        result = parse('XXXXXX\n' + self.location1_transaction_start + ' 10=-1000000*')
+        self.assertEqual(result[0]['longitude'], '-1000000')
+
+    def test_with_90_longitude_with_zero(self):
+        result = parse('XXXXXX\n' + self.location1_transaction_start + ' 10=0900000*')
+        self.assertEqual(result[0]['longitude'], ' 0900000')
+
+    def test_with_neg_90_longitude_with_zero(self):
+        result = parse('XXXXXX\n' + self.location1_transaction_start + ' 10=-0900000*')
+        self.assertEqual(result[0]['longitude'], '-0900000')
+
     def test_with_longitude_with_space(self):
         result = parse('XXXXXX\n' + self.location1_transaction_start + ' 10= 1000000*')
         self.assertEqual(result[0]['longitude'], ' 1000000')

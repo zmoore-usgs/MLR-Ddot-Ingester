@@ -248,6 +248,15 @@ def add_leading_space(value):
     """
     return value if len(value) == 0 or (value[0] == ' ' or value[0] == '-') else ' ' + value
 
+def add_leading_zero(value):
+    """
+    If the second character of value is not a '1' then, prepend a zero to value after the space or '-'
+    and return the result, otherwise return value.
+    :param str value:
+    :return: str
+    """
+    return value if len(value) == 0 or (value[1] == '1' or value[1] == '0') else '{0}0{1}'.format(value[:1], value[1:])
+
 
 def parse(file_contents):
     """
@@ -279,7 +288,7 @@ def parse(file_contents):
         this_result['siteNumber'] = transaction.get('siteNumber')
 
         if this_result.get('transactionType', '') not in ['A', 'M']:
-            raise ParseError('Parssing error on lines {0}: Invalid transaction type'.format(transaction.get('line_numbers')))
+            raise ParseError('Parsing error on lines {0}: Invalid transaction type'.format(transaction.get('line_numbers')))
 
         # Any special processing on values
         if 'stationName' in this_result:
@@ -290,6 +299,7 @@ def parse(file_contents):
 
         if 'longitude' in this_result:
             this_result['longitude'] = add_leading_space(this_result['longitude'])
+            this_result['longitude'] = add_leading_zero(this_result['longitude'])
 
         if 'siteWebReadyCode' in this_result:
             this_result['siteWebReadyCode'] = update_c_code_to_y_code(this_result['siteWebReadyCode'])
