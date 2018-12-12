@@ -73,7 +73,7 @@ def get_lines(content):
     :param str content:
     :rtype: list of str
     :return: List of lines within content that contain ddot data
-    :raises ParseError if any of the lines exceeds 80 characters
+    :raises ParseError if any of the lines fail line validation
     """
     if not content:
         raise ParseError('No contents found')
@@ -87,15 +87,37 @@ def get_lines(content):
     if not lines[len(lines) - 1]:
         lines = lines[0:len(lines) - 1]
 
-    lines_with_errors = []
+    validation_errors = validate_lines(lines)
+
+    if len(validation_errors) > 0:
+        raise ParseError(validation_errors)
+    
+    return lines
+
+def validate_lines(lines):
+    """
+    :param list of str lines:
+    :rtype: list of dicts for each location in content
+    :return: Returns a string containing any validation errors (lines with 
+    length > 80 or with invalid site numbres - no space in position 21). An
+    empty string indicates successful validation.
+    """
+    too_long_lines = []
+    bad_site_lines = []
+    error_message = ""
     for index, line in enumerate(lines):
         if len(line) > 80:
-            lines_with_errors.append(index + 2)
+            too_long_lines.append(index + 2)
+        elif line[20] != ' ':
+            bad_site_lines.append(index + 2)
 
-    if lines_with_errors:
-        raise ParseError('Contains lines exceeding 80 characters: line {0}'.format(', '.join([str(line) for line in lines_with_errors])))
-
-    return lines
+    if too_long_lines:
+        error_message += "Contains lines exceeding 80 characters: lines {0}. ".format(', '.join([str(line) for line in too_long_lines]))
+    
+    if bad_site_lines:
+        error_message += "Contains lines with invalid site number format: lines {0}.".format(', '.join([str(line) for line in bad_site_lines]))
+        
+    return error_message
 
 
 def get_transactions(lines):

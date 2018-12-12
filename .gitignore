@@ -102,6 +102,6 @@ ENV/
 
 # ide directories
 .idea
-
+.vscode
 root.crt
 /.project
