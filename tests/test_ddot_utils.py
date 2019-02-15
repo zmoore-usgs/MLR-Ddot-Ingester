@@ -113,11 +113,18 @@ class ValidateLinesTestCase(TestCase):
             'USGS 48004210843331 39=WS* 813=CST* 814=Y* 3=C* 41=US*'
         ]
 
+        self.invalid_site_number_very_short = [
+            'USGS 48 R=0*',
+            'USGS 48 6=05*',
+            'USGS 48 39=WS*'
+        ]
+
         self.multi_errors = [
             'USGS 4800421084333012R=0* T=A* 12=\'YELLVILLE WATERWORKS\'* 11=S* 35=M* 36=NAD27*',
             'USGS 48004210843330 R=0* T=A* 12=\'YELLVILLE WATERWORKS\'* 11=S* 35=M* 36=NAD27*',
             'USGS 480042108433301 39=WS* 813=CST* 814=Y* 3=C* 41=US*',
-            'USGS 480042108433301 R=0* T=A* 12=\'YELLVILLE WATERWORKS JUNK JUNK JUNK JUNK STUFF STUFF STUFF STUFF\'* 11=S* 35=M* 36=NAD27*'
+            'USGS 480042108433301 R=0* T=A* 12=\'YELLVILLE WATERWORKS JUNK JUNK JUNK JUNK STUFF STUFF STUFF STUFF\'* 11=S* 35=M* 36=NAD27*',
+            'USGS 48 R=0*'
         ]
 
     def test_with_valid_lines(self):
@@ -130,15 +137,19 @@ class ValidateLinesTestCase(TestCase):
 
     def test_with_invalid_site_number_long(self):
         result = validate_lines(self.invalid_site_number_long)
-        self.assertEqual(result, "Contains lines with invalid site number format: lines 2, 3, 4.")
+        self.assertEqual(result, "Contains lines with invalid site number format: lines 2, 3, 4. ")
 
     def test_with_invalid_site_number_short(self):
         result = validate_lines(self.invalid_site_number_short)
-        self.assertEqual(result, "Contains lines with invalid site number format: lines 2, 3, 4.")
+        self.assertEqual(result, "Contains lines with invalid site number format: lines 2, 3, 4. ")
+    
+    def test_with_invalid_site_number_very_short(self):
+        result = validate_lines(self.invalid_site_number_very_short)
+        self.assertEqual(result, "Contains lines with an invalid agency code / site number format (fewer than 21 characters): lines 2, 3, 4. ")
 
     def test_with_multi_error(self):
         result = validate_lines(self.multi_errors)
-        self.assertEqual(result, "Contains lines exceeding 80 characters: lines 5. Contains lines with invalid site number format: lines 2, 3.")
+        self.assertEqual(result, "Contains lines exceeding 80 characters: lines 5. Contains lines with an invalid agency code / site number format (fewer than 21 characters): lines 6. Contains lines with invalid site number format: lines 2, 3. ")
     
 class ParseTestCase(TestCase):
 
@@ -190,6 +201,11 @@ class ParseTestCase(TestCase):
             'USGS 48004210843331 39=WS* 813=CST* 814=Y* 3=C* 41=US*'
         )
 
+        self.invalid_site_number_very_short = (
+            'USGS 48 R=0*\r\n'
+            'USGS 48 6=05*\r\n'
+            'USGS 48 39=WS*\r\n'
+        )
 
     def test_no_contents(self):
         with self.assertRaises(ParseError):
@@ -213,8 +229,12 @@ class ParseTestCase(TestCase):
         with self.assertRaises(ParseError) as e:
             parse('XXXXXXX\n' + self.invalid_site_number_short)
         self.assertIn('lines 2, 3, 4', e.exception.message)
-    
 
+    def test_with_invalid_site_number_very_short(self):
+        with self.assertRaises(ParseError) as e:
+            parse('XXXXXXX\n' + self.invalid_site_number_very_short)
+        self.assertIn('lines 2, 3, 4', e.exception.message)
+    
     def test_with_single_location(self):
         result = parse('XXXXXXX\n' +self.location1)
         self.assertEqual(len(result), 1)
