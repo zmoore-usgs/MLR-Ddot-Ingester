@@ -99,8 +99,8 @@ def validate_lines(lines):
     :param list of str lines:
     :rtype: list of dicts for each location in content
     :return: Returns a string containing any validation errors (lines with 
-    length > 80 or with invalid site numbers - no space in position 21). An
-    empty string indicates successful validation.
+    length > 80, with length < 21, and with invalid site numbers - no space 
+    in position 21). An empty string indicates successful validation.
     """
     too_long_lines = []
     too_short_lines = []
