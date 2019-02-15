@@ -103,22 +103,27 @@ def validate_lines(lines):
     empty string indicates successful validation.
     """
     too_long_lines = []
+    too_short_lines = []
     bad_site_lines = []
     error_message = ""
     for index, line in enumerate(lines):
         if len(line) > 80:
             too_long_lines.append(index + 2)
-        elif len(line) < 21 or line[20] != ' ':
+        elif len(line) < 21:
+            too_short_lines.append(index + 2)
+        elif line[20] != ' ':
             bad_site_lines.append(index + 2)
 
     if too_long_lines:
         error_message += "Contains lines exceeding 80 characters: lines {0}. ".format(', '.join([str(line) for line in too_long_lines]))
+
+    if too_short_lines:
+        error_message += "Contains lines with an invalid agency code / site number format (fewer than 21 characters): lines {0}. ".format(', '.join([str(line) for line in too_short_lines]))
     
     if bad_site_lines:
-        error_message += "Contains lines with invalid site number format: lines {0}.".format(', '.join([str(line) for line in bad_site_lines]))
+        error_message += "Contains lines with invalid site number format: lines {0}. ".format(', '.join([str(line) for line in bad_site_lines]))
         
     return error_message
-
 
 def get_transactions(lines):
     """
