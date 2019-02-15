@@ -31,6 +31,16 @@ class DdotIngesterTestCase(TestCase):
         resp_data = json.loads(response.data)
         self.assertEqual({'error_message': 'Bad ddot file'}, resp_data)
 
+    def test_invalid_ddot_enocding(self):
+        good_token = jwt.encode({'authorities': ['one_role', 'two_role']}, 'secret')
+        with mock.patch('services.parse_ddot', side_effect=UnicodeDecodeError('not-utf-8', b"", 42, 43, 'not utf-8')):
+            response = self.app_client.post('/ddots',
+                                            content_type='multipart/form-data',
+                                            headers={'Authorization': 'Bearer {0}'.format(good_token.decode('utf-8'))},
+                                            data={'file': (BytesIO(b'Mocked ddot file'), 'ddot_file.txt')})
+        self.assertEqual(response.status_code, 400)
+        resp_data = json.loads(response.data)
+        self.assertEqual({'error_message': 'Uploaded file cannot be read (not encoded as UTF-8).'}, resp_data)
 
     def test_valid_ddot_file(self):
         good_token = jwt.encode({'authorities': ['one_role', 'two_role']}, 'secret', algorithm='HS256')
