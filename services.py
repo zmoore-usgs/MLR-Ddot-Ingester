@@ -99,7 +99,8 @@ class DdotIngester(Resource):
     @api.response(200, 'Successfully uploaded and parsed', [location_transaction_model])
     @api.response(400, 'File can not be parsed', error_model)
     @api.response(500, 'File parsing failed.', error_model)
-    @api.response(401, 'Not authorized')
+    @api.response(401, 'Not authorized or token expired', error_model)
+    @api.response(422, 'Invalid JWT Token', error_model)
     @api.doc(security='apikey')
     @api.expect(parser)
     @jwt_required
@@ -151,3 +152,8 @@ class Version(Resource):
                 "artifact": distribution.project_name
             }
         return resp
+
+@api.errorhandler
+def default_error_handler(error):
+    '''Default error handler'''
+    return {'error_message': str(error)}, getattr(error, 'code', 500)

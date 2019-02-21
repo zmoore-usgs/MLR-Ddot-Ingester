@@ -7,7 +7,7 @@ click==6.7
 cryptography>=2.3
 Flask==0.12.3
 Flask-JWT-Simple==0.0.3
-flask-restplus==0.10.1
+flask-restplus==0.12.1
 idna==2.6
 itsdangerous==0.24
 Jinja2==2.9.6

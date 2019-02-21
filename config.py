@@ -16,6 +16,7 @@ JWT_ALGORITHM = os.getenv('jwt_algorithm', 'HS256')
 # Set the JWT_DECODE_AUDIENCE environment variable to the value of the 'aud' claim in the
 JWT_DECODE_AUDIENCE = os.getenv('jwt_decode_audience')
 
+ERROR_INCLUDE_MESSAGE=False
 
 
 

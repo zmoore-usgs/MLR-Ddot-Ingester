@@ -1,6 +1,6 @@
 from functools import wraps
 
-from flask import current_app
+from flask import current_app, jsonify
 from flask_jwt_simple import JWTManager, jwt_required as simple_jwt_required, get_jwt
 from flask_jwt_simple.exceptions import NoAuthorizationError, InvalidHeaderError
 
@@ -23,13 +23,25 @@ class JWTRestplusManager(JWTManager):
         self.api = api
         super(self.__class__, self).__init__(app)
 
-        @api.errorhandler(ExpiredSignatureError) #Status 401
-        @api.errorhandler(NoAuthorizationError) #Status 401
-        @api.errorhandler(InvalidHeaderError)  # Status 401
-        @api.errorhandler(DecodeError) # Returns status 422
-        @api.errorhandler(InvalidAudienceError) # Status 422
-        def handler_invalid_token(error):
-            return {'message': error.message}
+        # https://github.com/vimalloc/flask-jwt-extended/issues/86
+        self._set_error_handler_callbacks(api)
+
+        # Override default error handlers
+        self.expired_token_loader(expired_token_callback)
+        self.invalid_token_loader(invalid_token_callback)
+        self.unauthorized_loader(unauthorized_callback)
+
+
+def expired_token_callback():
+    return jsonify({'error_message': 'Token has expired'}), 401
+
+
+def invalid_token_callback(error_string):
+    return jsonify({'error_message': error_string}), 422
+
+
+def unauthorized_callback(error_string):
+    return jsonify({'error_message': error_string}), 401
 
 def jwt_required(fn):
     """
