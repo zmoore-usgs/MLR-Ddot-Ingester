@@ -16,5 +16,5 @@ JWT_ALGORITHM = os.getenv('jwt_algorithm', 'HS256')
 # Set the JWT_DECODE_AUDIENCE environment variable to the value of the 'aud' claim in the
 JWT_DECODE_AUDIENCE = os.getenv('jwt_decode_audience')
 
-# Configure exceptions to not alawuys output with a `message` field. Global exception handling is done via a custom handler in services.py.
+# Configure exception JSON to not always output with a `message` field. Global exception handling is done via a custom handler in services.py.
 ERROR_INCLUDE_MESSAGE=False
