@@ -31,15 +31,15 @@ class JWTRestplusManager(JWTManager):
         self.invalid_token_loader(invalid_token_callback)
         self.unauthorized_loader(unauthorized_callback)
 
-
+# Slightly tweaked version of the default callback from flask_jwt_simple.default_callbacks
 def expired_token_callback():
     return jsonify({'error_message': 'Token has expired'}), 401
 
-
+# Slightly tweaked version of the default callback from flask_jwt_simple.default_callbacks
 def invalid_token_callback(error_string):
     return jsonify({'error_message': error_string}), 422
 
-
+# Slightly tweaked version of the default callback from flask_jwt_simple.default_callbacks
 def unauthorized_callback(error_string):
     return jsonify({'error_message': error_string}), 401
 
