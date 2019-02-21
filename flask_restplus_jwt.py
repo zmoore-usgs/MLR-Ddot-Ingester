@@ -2,10 +2,8 @@ from functools import wraps
 
 from flask import current_app, jsonify
 from flask_jwt_simple import JWTManager, jwt_required as simple_jwt_required, get_jwt
-from flask_jwt_simple.exceptions import NoAuthorizationError, InvalidHeaderError
-
-from jwt.exceptions import ExpiredSignatureError, DecodeError, InvalidAudienceError
-
+from flask_jwt_simple.exceptions import NoAuthorizationError
+from jwt.exceptions import InvalidTokenError
 
 
 class JWTRestplusManager(JWTManager):
@@ -26,10 +24,19 @@ class JWTRestplusManager(JWTManager):
         # https://github.com/vimalloc/flask-jwt-extended/issues/86
         self._set_error_handler_callbacks(api)
 
-        # Override default error handlers
+        # As a result of https://github.com/noirbizarre/flask-restplus/issues/421 we must register
+        # the invalid token error handler for each sub-class of jwt.exceptions.InvalidTokenError
+        def handle_invalid_token_error(e):
+            return self._invalid_token_callback(str(e))
+
+        for subclass in InvalidTokenError.__subclasses__():
+            (api.errorhandler(subclass))(handle_invalid_token_error)
+
+        # Override default error callbacks
         self.expired_token_loader(expired_token_callback)
         self.invalid_token_loader(invalid_token_callback)
         self.unauthorized_loader(unauthorized_callback)
+
 
 # Slightly tweaked version of the default callback from flask_jwt_simple.default_callbacks
 def expired_token_callback():
