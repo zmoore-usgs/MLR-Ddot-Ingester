@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html). (Patch version X.Y.0 is implied if not specified.)
 
-## [0.6] - 2019-02-28
+## [0.6] - 2019-03-01
 ## Changed
 - Fixed a bug when DDots are parsed that have lines < 21 characters. 
 - Standardize all error messages
