@@ -30,7 +30,7 @@ def read(filepath):
 requirements = read_requirements('requirements.txt')
 
 setup(name='usgs_wma_mlr_ddot_ingester',
-      version='0.6.0',
+      version='0.7.0dev',
       description='MLR Ddot Ingester Microservice',
       author='Mary Bucknell, Andrew Yan, Dave Steinich, Zack Moore, Kathy Schoephoester',
       author_email='mlr-devs@usgs.gov',
