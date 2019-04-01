@@ -1,0 +1,26 @@
+---
+  version: '3.7'
+      
+  services:
+    mlr-ddot-ingester:
+      build: .
+      image: mlr-ddot-ingester
+      ports:
+        - "7010:7010"
+      volumes: 
+        - ./docker/certificates/import_certs:/home/python/certificates:ro
+      env_file:
+        - ./docker/config.env
+        - ./docker/secrets.env
+    
+    mlr-ddot-ingester-local-dev:
+      build: .
+      image: mlr-ddot-ingester
+      network_mode: "host"
+      ports:
+        - "7010:7010"
+      volumes: 
+        - ./docker/certificates/import_certs:/home/python/certificates:ro
+      env_file:
+        - ./docker/config.env
+        - ./docker/secrets.env
