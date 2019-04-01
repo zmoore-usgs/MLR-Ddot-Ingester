@@ -29,6 +29,12 @@
           - chmod +x docker-compose
           - sudo mv docker-compose /usr/local/bin
           - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
+          - openssl genrsa -out .travis/wildcard.key 2048
+          - openssl req -nodes -newkey rsa:2048 -keyout  .travis/wildcard.key -out  .travis/wildcard.csr -subj "/C=US/ST=Wisconsin/L=Middleon/O=US Geological Survey/OU=WMA/CN=*"
+          - openssl x509 -req -days 9999 -in .travis/wildcard.csr -signkey .travis/wildcard.key  -out .travis/wildcard.crt
+          - docker run -d -p 8443:443 -p 8080:80 -v ${PWD}/.travis/nginx.conf:/etc/nginx/nginx.conf -v ${PWD}/.travis/wildcard.crt:/etc/nginx/wildcard.crt -v ${PWD}/.travis/wildcard.key:/etc/nginx/wildcard.key nginx:latest && sleep 5
+          - docker pull localhost:8443/mlr-python-base-docker:latest
+          - docker tag localhost:8443/mlr-python-base-docker:latest cidasdpdasartip.cr.usgs.gov:8447/mlr-python-base-docker:latest
           - curl -L https://github.com/arminc/clair-scanner/releases/download/v8/clair-scanner_linux_amd64 > clair-scanner
           - chmod +x clair-scanner
           - sudo mv clair-scanner /usr/local/bin
