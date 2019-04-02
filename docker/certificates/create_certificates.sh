@@ -11,8 +11,8 @@ cp $DIR/openssl-root.conf $DIR/root/openssl.conf
 cp $DIR/openssl-intermediate.conf $DIR/intermediate1/openssl.conf
 
 touch $DIR/root/certindex
-echo 1000 > $DIR/root/certserial
-echo 1000 > $DIR/root/crlnumber
+echo $(date +%s%N)1 > $DIR/root/certserial
+echo $(date +%s%N)1 > $DIR/root/crlnumber
 
 echo "Generating RSA private key @ $DIR/root/rootca.key ..."
 openssl genrsa -out $DIR/root/rootca.key 8192
@@ -43,8 +43,8 @@ cp $DIR/root/rootca.key $DIR/intermediate1/
 
 mkdir $DIR/intermediate1/end_user_certs
 touch $DIR/intermediate1/certindex
-echo 1000 > $DIR/intermediate1/certserial
-echo 1000 > $DIR/intermediate1/crlnumber
+echo $(date +%s%N)1 > $DIR/intermediate1/certserial
+echo $(date +%s%N)1 > $DIR/intermediate1/crlnumber
 
 cd $DIR/intermediate1
 echo "Generating an empty CRL (both in PEM and DER) @ $DIR/intermediate1/rootca.crl.pem and $DIR/intermediate1/rootca.crl respectively ..."
