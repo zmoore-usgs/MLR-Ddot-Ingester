@@ -6,7 +6,7 @@
       build: .
       image: mlr-ddot-ingester
       ports:
-        - "7010:7010"
+        - "6028:6028"
       volumes: 
         - ./docker/certificates/import_certs:/home/python/certificates:ro
       env_file:
@@ -18,7 +18,7 @@
       image: mlr-ddot-ingester
       network_mode: "host"
       ports:
-        - "7010:7010"
+        - "6028:6028"
       volumes: 
         - ./docker/certificates/import_certs:/home/python/certificates:ro
       env_file:

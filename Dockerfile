@@ -19,7 +19,7 @@ RUN env/bin/python -m unittest && env/bin/python setup.py bdist_wheel
 FROM cidasdpdasartip.cr.usgs.gov:8447/mlr-python-base-docker:latest
 LABEL maintainer="gs-w_eto_eb_federal_employees@usgs.gov"
 
-ENV listening_port=7010
+ENV listening_port=6028
 ENV protocol=https
 ENV oauth_server_token_key_url=https://test.gov/oauth/token_key
 ENV authorized_roles=test_default
