@@ -10,7 +10,7 @@ Flask-JWT-Simple==0.0.3
 flask-restplus==0.12.1
 idna==2.6
 itsdangerous==0.24
-Jinja2==2.9.6
+Jinja2==2.10.1
 jsonschema==2.6.0
 MarkupSafe==1.0
 pycparser==2.18
