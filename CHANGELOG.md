@@ -5,11 +5,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html). (Patch version X.Y.0 is implied if not specified.)
 
 ## [Unreleased]
+
+## [0.7] - 2019-04-12 - End of Pilot
 ### Added
 - Docker configuration
 
 ### Changed
 - Merged this repository with the mlr-ddot-ingester-docker repository
+- Changed versioning to proper semantic without the service name
 
 ## [0.6] - 2019-03-01
 ## Changed
@@ -59,7 +62,8 @@ is not true, the latitude or longitude field parsed from the ddot file has a spa
 - POST to upload a ddot file and parse into a json object at /ddots endpoint
 - Swagger document at /api endpoint
 
-[Unreleased]: https://github.com/USGS-CIDA/MLR-Ddot-Ingester/compare/MLR-Ddot-Ingester-0.6.0...master
+[Unreleased]: https://github.com/USGS-CIDA/MLR-Ddot-Ingester/compare/MLR-Ddot-Ingester-0.7.0...master
+[0.7]: https://github.com/USGS-CIDA/MLR-Ddot-Ingester/compare/MLR-Ddot-Ingester-0.6.0...0.7.0
 [0.6]: https://github.com/USGS-CIDA/MLR-Ddot-Ingester/compare/MLR-Ddot-Ingester-0.5.0...MLR-Ddot-Ingester-0.6.0
 [0.5]: https://github.com/USGS-CIDA/MLR-Ddot-Ingester/compare/MLR-Ddot-Ingester-0.4.0...MLR-Ddot-Ingester-0.5.0
 [0.4]: https://github.com/USGS-CIDA/MLR-Ddot-Ingester/compare/MLR-Ddot-Ingester-0.3.0...MLR-Ddot-Ingester-0.4.0
