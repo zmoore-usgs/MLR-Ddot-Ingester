@@ -2,6 +2,12 @@
 [![Build Status](https://travis-ci.org/USGS-CIDA/MLR-Ddot-Ingester.svg?branch=master)](https://travis-ci.org/USGS-CIDA/MLR-Ddot-Ingester)
 [![Coverage Status](https://coveralls.io/repos/github/USGS-CIDA/MLR-Ddot-Ingester/badge.svg)](https://coveralls.io/github/USGS-CIDA/MLR-Ddot-Ingester)
 
+## Service Description
+This service is part of the MLR microservices and deals with parsing uploaded DDot files. This service is contacted by the MLR Gateway service and the request is sent via HTTP with the raw uploaded file that the Gateway received from the UI. This service is the first step in any DDot-related MLR workflow and is only contacted once per submitted DDot file.
+
+This service has only a single exposesd business logic API method which is a POST at `/ddots` that expects the raw uploaded DDot file and returns the a JSON document representing the parsed DDot file. The format of the JSON document can be examined in the Swagger API documentation.
+
+## Building and Running
 This project has been built and tested with python 3.6.x. To build the project locally you will need
 python 3 and virtualenv installed.
 ```bash
