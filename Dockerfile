@@ -1,7 +1,14 @@
 FROM python:3.6-alpine as build
 
+ENV PIP_CERT=/etc/ssl/certs/ca-certificates.crt
+
 # Add build dependencies (See: https://github.com/gliderlabs/docker-alpine/issues/458)
 RUN apk add -U --no-cache gcc build-base linux-headers ca-certificates python3-dev libffi-dev openssl-dev py3-virtualenv
+
+RUN if getent ahosts "sslhelp.doi.net" > /dev/null 2>&1; then \
+                wget 'https://s3-us-west-2.amazonaws.com/prod-owi-resources/resources/InstallFiles/SSL/DOIRootCA.cer' -O /usr/local/share/ca-certificates/DOIRootCA2.crt && \
+                update-ca-certificates; \
+        fi
 
 COPY --chown=1000:1000 requirements.txt /build/requirements.txt
 
