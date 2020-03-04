@@ -30,7 +30,7 @@ ENV listening_port=6028
 ENV protocol=https
 ENV oauth_server_token_key_url=https://test.gov/oauth/token_key
 ENV authorized_roles=test_default
-ENV artifact_id=usgs_wma_mlr_ddot_ingester
+ENV artifact_id=usgs-wma-mlr-ddot-ingester
 
 COPY --chown=1000:1000 --from=build /build/dist/*.whl .
 
