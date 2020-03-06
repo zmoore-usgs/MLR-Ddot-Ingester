@@ -61,7 +61,6 @@ class GetTransactionsTestCase(TestCase):
                          )
         self.assertEqual(result[1].get('line_numbers'), [5, 6])
 
-
 class ParseKeyValuePairsTestCase(TestCase):
 
     def test_with_empty_string(self):
@@ -221,11 +220,6 @@ class ParseTestCase(TestCase):
     def test_with_no_transactions(self):
         with self.assertRaises(ParseError):
             parse('XXXXXXXX')
-
-    def test_with_too_many_transactions(self):
-        with self.assertRaises(ParseError) as e:
-            too_many_transactions(30001)
-        self.assertIn('maximum-allowed 30000', e.exception.message)
 
     def test_with_line_too_long(self):
         with self.assertRaises(ParseError) as e:

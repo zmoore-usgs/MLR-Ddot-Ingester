@@ -166,6 +166,11 @@ def get_transactions(lines):
         }
         result.append(transaction)
 
+    if too_many_transactions(len(result)):
+        raise ParseError(
+            'Ddot file contains more than the maximum-allowed {0} transactions. Please split the file into multiple ddot files of fewer than {0} transactions.'.format(
+                MAX_TRANSACTIONS))
+
     return result
 
 
@@ -301,13 +306,12 @@ def parse(file_contents):
     """
 
     lines = get_lines(file_contents)
-    transactions = get_transactions(lines)
-    results = []
+    try:
+        transactions = get_transactions(lines)
+    except ParseError as err:
+        raise ParseError(err.message)
 
-    if too_many_transactions(len(transactions)):
-        raise ParseError(
-            'Ddot file contains more than the maximum-allowed {0} transactions. Please split the file into multiple ddot files of fewer than {0} transactions.'.format(
-                MAX_TRANSACTIONS))
+    results = []
 
     for transaction in transactions:
         try:
