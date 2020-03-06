@@ -1,5 +1,6 @@
 import itertools
 import re
+import config
 
 KEY_TO_ATTR_MAPPING = {
     '5': 'projectNumber',
@@ -58,6 +59,7 @@ KEY_TO_ATTR_MAPPING = {
 
 DATABASE_TABLE_ID_TOKEN = 'R='
 
+MAX_TRANSACTIONS = int(config.MAXIMUM_TRANSACTIONS)
 
 class ParseError(Exception):
 
@@ -164,6 +166,11 @@ def get_transactions(lines):
             'line_numbers': line_numbers
         }
         result.append(transaction)
+
+    if too_many_transactions(len(result)):
+        raise ParseError(
+            'Ddot file contains more than the maximum-allowed {0} transactions. Please split the file into multiple ddot files of fewer than {0} transactions.'.format(
+                MAX_TRANSACTIONS))
 
     return result
 
@@ -284,6 +291,13 @@ def add_leading_zero(value):
     """
     return value if len(value) == 0 or (value[1] == '1' or value[1] == '0') else '{0}0{1}'.format(value[:1], value[1:])
 
+def too_many_transactions(value):
+    """
+    If the number of transactions (value) is greater than 30,000 return the true, otherwise return false.
+    :param int value:
+    :return: boolean
+    """
+    return True if value > MAX_TRANSACTIONS else False
 
 def parse(file_contents):
     """
@@ -293,8 +307,13 @@ def parse(file_contents):
     """
 
     lines = get_lines(file_contents)
-    transactions = get_transactions(lines)
+    try:
+        transactions = get_transactions(lines)
+    except ParseError as err:
+        raise ParseError(err.message)
+
     results = []
+
     for transaction in transactions:
         try:
             kv_pairs = parse_key_value_pairs(transaction.get('key_value_pairs'))
@@ -343,3 +362,5 @@ def parse(file_contents):
         raise ParseError('Duplicate transaction for sites: {0}'.format(duplicate_sites))
 
     return site_results
+
+

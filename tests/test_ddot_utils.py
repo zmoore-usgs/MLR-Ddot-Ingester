@@ -1,7 +1,7 @@
 
 from unittest import TestCase
 
-from ddot_utils import get_transactions, parse_key_value_pairs, validate_lines, ParseError, parse
+from ddot_utils import get_transactions, parse_key_value_pairs, validate_lines, ParseError, too_many_transactions, parse
 
 class GetTransactionsTestCase(TestCase):
 
@@ -60,7 +60,6 @@ class GetTransactionsTestCase(TestCase):
                           'Long Line S* 35=M* 36=NAD27* 6=05* 7=05* 8=023* 20=11010014*')
                          )
         self.assertEqual(result[1].get('line_numbers'), [5, 6])
-
 
 class ParseKeyValuePairsTestCase(TestCase):
 
@@ -150,7 +149,14 @@ class ValidateLinesTestCase(TestCase):
     def test_with_multi_error(self):
         result = validate_lines(self.multi_errors)
         self.assertEqual(result, "Contains lines exceeding 80 characters: lines 5. Contains lines with an invalid agency code / site number format (fewer than 21 characters): lines 6. Contains lines with invalid site number format: lines 2, 3. ")
-    
+
+class TooManyTransactionsTestCase(TestCase):
+    def setUp(self):
+        self.maxDiff = None
+
+    def test_too_many_transactions(self):
+        self.assertTrue(too_many_transactions(30001))
+
 class ParseTestCase(TestCase):
 
     def setUp(self):
