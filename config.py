@@ -18,3 +18,6 @@ JWT_DECODE_AUDIENCE = os.getenv('jwt_decode_audience')
 
 # Configure exception JSON to not always output with a `message` field. Global exception handling is done via a custom handler in services.py.
 ERROR_INCLUDE_MESSAGE=False
+
+#Configure the maximum number of transactions that can be submitted in a single ddot file.
+MAXIMUM_TRANSACTIONS=os.getenv('maximum_transactions', '15000')

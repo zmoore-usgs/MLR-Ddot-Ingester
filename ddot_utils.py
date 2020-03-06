@@ -1,5 +1,6 @@
 import itertools
 import re
+import config
 
 KEY_TO_ATTR_MAPPING = {
     '5': 'projectNumber',
@@ -58,7 +59,7 @@ KEY_TO_ATTR_MAPPING = {
 
 DATABASE_TABLE_ID_TOKEN = 'R='
 
-MAX_TRANSACTIONS = 30000
+MAX_TRANSACTIONS = int(config.MAXIMUM_TRANSACTIONS)
 
 class ParseError(Exception):
 
