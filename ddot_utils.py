@@ -58,6 +58,7 @@ KEY_TO_ATTR_MAPPING = {
 
 DATABASE_TABLE_ID_TOKEN = 'R='
 
+MAX_TRANSACTIONS = 30000
 
 class ParseError(Exception):
 
@@ -284,6 +285,13 @@ def add_leading_zero(value):
     """
     return value if len(value) == 0 or (value[1] == '1' or value[1] == '0') else '{0}0{1}'.format(value[:1], value[1:])
 
+def too_many_transactions(value):
+    """
+    If the number of transactions (value) is greater than 30,000 return the true, otherwise return false.
+    :param int value:
+    :return: boolean
+    """
+    return True if value > MAX_TRANSACTIONS else False
 
 def parse(file_contents):
     """
@@ -295,6 +303,12 @@ def parse(file_contents):
     lines = get_lines(file_contents)
     transactions = get_transactions(lines)
     results = []
+
+    if too_many_transactions(len(transactions)):
+        raise ParseError(
+            'Ddot file contains more than the maximum-allowed {0} transactions. Please split the file into multiple ddot files of fewer than {0} transactions.'.format(
+                MAX_TRANSACTIONS))
+
     for transaction in transactions:
         try:
             kv_pairs = parse_key_value_pairs(transaction.get('key_value_pairs'))
@@ -343,3 +357,5 @@ def parse(file_contents):
         raise ParseError('Duplicate transaction for sites: {0}'.format(duplicate_sites))
 
     return site_results
+
+
