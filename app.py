@@ -14,9 +14,9 @@ if os.path.exists(os.path.join(PROJECT_DIR, '.env')):
     application.config.from_pyfile('.env')
 
 if application.config.get('AUTH_JWKS_URL'):
-    # retrieve data from jwks_uri endpoint
+    # Retrieve data from jwks_uri endpoint
     jwkSet = requests.get(application.config.get('AUTH_JWKS_URL'), verify=application.config['AUTH_CERT_PATH'])
-    # retrieve first RS256 jwk entry from jwks_uri endpoint and use it to construct the RSA public key
+    # Retrieve first RS256 jwk entry from response and use it to construct the RSA public key
     for index, jwk in enumerate(jwkSet.json()['keys']):
         if jwk['alg'] == 'RS256':
             application.config['JWT_PUBLIC_KEY'] = RSAAlgorithm.from_jwk(json.dumps(jwk))
